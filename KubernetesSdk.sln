@@ -1,0 +1,109 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Generator", "src\KubernetesSdk.Generator\KubernetesSdk.Generator.csproj", "{60CD8220-DE98-4C8E-9E93-6D1EF124F588}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Client", "src\KubernetesSdk.Client\KubernetesSdk.Client.csproj", "{95FB60D4-FD5F-4D8D-96BE-A7D2D8ABF1C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Models", "src\KubernetesSdk.Models\KubernetesSdk.Models.csproj", "{BE99D631-3887-4103-AA23-F797D0BE35B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.KubeConfig", "src\KubernetesSdk.KubeConfig\KubernetesSdk.KubeConfig.csproj", "{1BBE279A-C8DF-480A-BEDC-BE2E0A5239B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Serialization", "src\KubernetesSdk.Serialization\KubernetesSdk.Serialization.csproj", "{D9609E30-60D8-44A4-BE23-04D3A0F2684F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B60D6F90-981D-4D55-A229-ADCBD3E5C182}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{2AF9B597-C344-478E-BA41-A28AB3990F59}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.KubeConfig.Tests", "test\KubernetesSdk.KubeConfig.Tests\KubernetesSdk.KubeConfig.Tests.csproj", "{F97774DE-0D07-4FEE-8495-86FEA44396C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Client.Tests", "test\KubernetesSdk.Client.Tests\KubernetesSdk.Client.Tests.csproj", "{ABD07CA4-1076-44A6-B9B1-678FE282B98D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Client.Extensions.DependencyInjection", "src\KubernetesSdk.Client.Extensions.DependencyInjection\KubernetesSdk.Client.Extensions.DependencyInjection.csproj", "{A09B2087-D6E2-4B93-9738-215080E24E17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Client.Extensions.Configuration", "src\KubernetesSdk.Client.Extensions.Configuration\KubernetesSdk.Client.Extensions.Configuration.csproj", "{3B55AD50-7924-4BEC-8C48-56C03942698B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Client.Extensions.Configuration.Json", "src\KubernetesSdk.Client.Extensions.Configuration.Json\KubernetesSdk.Client.Extensions.Configuration.Json.csproj", "{55E24E31-60D6-4E4D-835C-2B269B0639E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesSdk.Serialization.Tests", "test\KubernetesSdk.Serialization.Tests\KubernetesSdk.Serialization.Tests.csproj", "{64B5F488-C53A-42C0-A93C-0D100C44D146}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D526ABE-EC62-4A0C-BEB4-29432B4003E9}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		global.json = global.json
+		stylecop.json = stylecop.json
+		KubernetesSdk.ruleset = KubernetesSdk.ruleset
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60CD8220-DE98-4C8E-9E93-6D1EF124F588}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60CD8220-DE98-4C8E-9E93-6D1EF124F588}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60CD8220-DE98-4C8E-9E93-6D1EF124F588}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60CD8220-DE98-4C8E-9E93-6D1EF124F588}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95FB60D4-FD5F-4D8D-96BE-A7D2D8ABF1C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95FB60D4-FD5F-4D8D-96BE-A7D2D8ABF1C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95FB60D4-FD5F-4D8D-96BE-A7D2D8ABF1C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95FB60D4-FD5F-4D8D-96BE-A7D2D8ABF1C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE99D631-3887-4103-AA23-F797D0BE35B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE99D631-3887-4103-AA23-F797D0BE35B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE99D631-3887-4103-AA23-F797D0BE35B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE99D631-3887-4103-AA23-F797D0BE35B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BBE279A-C8DF-480A-BEDC-BE2E0A5239B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BBE279A-C8DF-480A-BEDC-BE2E0A5239B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BBE279A-C8DF-480A-BEDC-BE2E0A5239B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BBE279A-C8DF-480A-BEDC-BE2E0A5239B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9609E30-60D8-44A4-BE23-04D3A0F2684F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9609E30-60D8-44A4-BE23-04D3A0F2684F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9609E30-60D8-44A4-BE23-04D3A0F2684F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9609E30-60D8-44A4-BE23-04D3A0F2684F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F97774DE-0D07-4FEE-8495-86FEA44396C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97774DE-0D07-4FEE-8495-86FEA44396C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F97774DE-0D07-4FEE-8495-86FEA44396C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F97774DE-0D07-4FEE-8495-86FEA44396C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABD07CA4-1076-44A6-B9B1-678FE282B98D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABD07CA4-1076-44A6-B9B1-678FE282B98D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABD07CA4-1076-44A6-B9B1-678FE282B98D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABD07CA4-1076-44A6-B9B1-678FE282B98D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A09B2087-D6E2-4B93-9738-215080E24E17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A09B2087-D6E2-4B93-9738-215080E24E17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A09B2087-D6E2-4B93-9738-215080E24E17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A09B2087-D6E2-4B93-9738-215080E24E17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B55AD50-7924-4BEC-8C48-56C03942698B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B55AD50-7924-4BEC-8C48-56C03942698B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B55AD50-7924-4BEC-8C48-56C03942698B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B55AD50-7924-4BEC-8C48-56C03942698B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55E24E31-60D6-4E4D-835C-2B269B0639E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55E24E31-60D6-4E4D-835C-2B269B0639E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55E24E31-60D6-4E4D-835C-2B269B0639E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55E24E31-60D6-4E4D-835C-2B269B0639E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64B5F488-C53A-42C0-A93C-0D100C44D146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64B5F488-C53A-42C0-A93C-0D100C44D146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64B5F488-C53A-42C0-A93C-0D100C44D146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64B5F488-C53A-42C0-A93C-0D100C44D146}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{95FB60D4-FD5F-4D8D-96BE-A7D2D8ABF1C1} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{60CD8220-DE98-4C8E-9E93-6D1EF124F588} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{1BBE279A-C8DF-480A-BEDC-BE2E0A5239B8} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{BE99D631-3887-4103-AA23-F797D0BE35B8} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{D9609E30-60D8-44A4-BE23-04D3A0F2684F} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{F97774DE-0D07-4FEE-8495-86FEA44396C0} = {2AF9B597-C344-478E-BA41-A28AB3990F59}
+		{ABD07CA4-1076-44A6-B9B1-678FE282B98D} = {2AF9B597-C344-478E-BA41-A28AB3990F59}
+		{A09B2087-D6E2-4B93-9738-215080E24E17} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{3B55AD50-7924-4BEC-8C48-56C03942698B} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{55E24E31-60D6-4E4D-835C-2B269B0639E6} = {B60D6F90-981D-4D55-A229-ADCBD3E5C182}
+		{64B5F488-C53A-42C0-A93C-0D100C44D146} = {2AF9B597-C344-478E-BA41-A28AB3990F59}
+	EndGlobalSection
+EndGlobal
