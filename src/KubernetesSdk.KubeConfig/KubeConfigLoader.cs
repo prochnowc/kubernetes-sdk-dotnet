@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using AppCore.Diagnostics;
 using Kubernetes.KubeConfig.Models;
 using Kubernetes.Serialization;
 
@@ -24,6 +25,7 @@ public class KubeConfigLoader
 
     public KubeConfigLoader(IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(serializerFactory);
         _serializerFactory = serializerFactory;
     }
 
