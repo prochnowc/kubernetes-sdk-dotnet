@@ -1,5 +1,15 @@
 name: Build and Test
 
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+    types: [assigned, opened, synchronize, reopened]
+
+env:
+  BUILD_CONFIGURATION: Debug
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -16,12 +26,14 @@ jobs:
         with:
           dotnet-version: |
             8.0.x
+      - name: Restore
+        run: dotnet restore --configuration ${{env.BUILD_CONFIGURATION}}
       - name: Build
-        run: dotnet build --configuration Debug
+        run: dotnet build --configuration ${{env.BUILD_CONFIGURATION}} --no-restore
       - name: Test
-        run: dotnet test --configuration Debug --collect:"Code Coverage;Format=Cobertura" --logger trx --results-directory test-results --no-build
+        run: dotnet test --configuration ${{env.BUILD_CONFIGURATION}} --collect:"Code Coverage;Format=Cobertura" --logger trx --results-directory test-results --no-build
       - name: Build packages
-        run: dotnet pack --configuration Debug --output ./artifacts --no-build
+        run: dotnet pack --configuration ${{env.BUILD_CONFIGURATION}} --output ./artifacts --no-build
 #      - name: Upload coverage to Codecov
 #        uses: codecov/codecov-action@v3
 #        with:
@@ -33,7 +45,3 @@ jobs:
           name: test-results
           path: ./test-results
         if: ${{ always() }} # Always run this step even on failure
-
-on:
-  pull_request:
-    types: [assigned, opened, synchronize, reopened]
