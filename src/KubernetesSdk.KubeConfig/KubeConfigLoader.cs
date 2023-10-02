@@ -52,12 +52,12 @@ public class KubeConfigLoader
     {
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/yaml");
         return await serializer.DeserializeAsync<V1Config>(stream, cancellationToken)
-                               .ConfigureAwait(false);
+                               .ConfigureAwait(false) ?? new V1Config();
     }
 
     public V1Config Load(Stream stream)
     {
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/yaml");
-        return serializer.Deserialize<V1Config>(stream);
+        return serializer.Deserialize<V1Config>(stream) ?? new V1Config();
     }
 }

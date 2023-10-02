@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <NoWarn>$(NoWarn);SA1600;VSTHRD200</NoWarn>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

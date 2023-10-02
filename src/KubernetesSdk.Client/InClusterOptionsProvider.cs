@@ -59,7 +59,7 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
     {
         if (!IsInCluster())
         {
-            throw new KubernetesClientException(
+            throw new KubernetesConfigException(
                 $"Unable to load in-cluster configuration. Missing environment variables {ServiceHostEnvironmentVariableName} and {ServicePortEnvironmentVariableName} or service account token. Hint: consider using option \"automountServiceAccountToken: true\" in deployment declaration.");
         }
 

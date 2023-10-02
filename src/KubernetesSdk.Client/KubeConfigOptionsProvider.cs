@@ -40,6 +40,18 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
     /// </summary>
     public string? Context { get; set; }
 
+    public KubeConfigOptionsProvider()
+        : this(
+            new IAuthProviderOptionsBinder[]
+            {
+                new AzureAuthProviderOptionsBinder(),
+                new GcpAuthProviderOptionsBinder(),
+                new OidcAuthProviderOptionsBinder(),
+            },
+            KubernetesSerializerFactory.Instance)
+    {
+    }
+
     public KubeConfigOptionsProvider(
         IEnumerable<IAuthProviderOptionsBinder> authProviderOptionBinders,
         IKubernetesSerializerFactory serializerFactory)
@@ -75,7 +87,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
         if (string.IsNullOrWhiteSpace(options.Host))
         {
-            throw new InvalidOperationException("Cannot infer Kubernetes host URL either from context or masterUrl");
+            throw new KubernetesConfigException("Cannot infer Kubernetes host URL either from context or masterUrl");
         }
     }
 
@@ -96,7 +108,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
         if (context == null)
         {
-            throw new InvalidOperationException($"Context '{contextName}' not found in '{configPath}'");
+            throw new KubernetesConfigException($"Context '{contextName}' not found in '{configPath}'");
         }
 
         options.Namespace = context.ContextDetails?.Namespace;
@@ -114,7 +126,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
         string? clusterName = context.ContextDetails?.Cluster;
         if (string.IsNullOrWhiteSpace(clusterName))
         {
-            throw new InvalidOperationException($"Cluster not set for context '{context.Name}' in '{configPath}'");
+            throw new KubernetesConfigException($"Cluster not set for context '{context.Name}' in '{configPath}'");
         }
 
         Cluster? cluster = config.Clusters.FirstOrDefault(
@@ -122,12 +134,12 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
         if (cluster?.ClusterEndpoint == null)
         {
-            throw new InvalidOperationException($"Cluster '{clusterName}' not found in '{configPath}'");
+            throw new KubernetesConfigException($"Cluster '{clusterName}' not found in '{configPath}'");
         }
 
         if (string.IsNullOrWhiteSpace(cluster.ClusterEndpoint?.Server))
         {
-            throw new InvalidOperationException($"Server not set for cluster '{clusterName}' in '{configPath}'");
+            throw new KubernetesConfigException($"Server not set for cluster '{clusterName}' in '{configPath}'");
         }
 
         options.Host = ParseServerUri(cluster.ClusterEndpoint!.Server!, clusterName!, configPath);
@@ -173,12 +185,12 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
         if (user == null)
         {
-            throw new InvalidOperationException($"User not found for context '{context.Name}' in '{configPath}'");
+            throw new KubernetesConfigException($"User not found for context '{context.Name}' in '{configPath}'");
         }
 
         if (user.UserCredentials == null)
         {
-            throw new InvalidOperationException($"User credentials not found for user '{user.Name}' in '{configPath}'");
+            throw new KubernetesConfigException($"User credentials not found for user '{user.Name}' in '{configPath}'");
         }
 
         bool credentialsFound = false;
@@ -222,7 +234,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
             if (optionsResolver == null)
             {
-                throw new InvalidOperationException(
+                throw new KubernetesConfigException(
                     $"Unsupported authentication provider '{authProviderName}' for user '{user.Name}' in '{configPath}'");
             }
 
@@ -233,13 +245,13 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
         {
             if (string.IsNullOrWhiteSpace(user.UserCredentials.Execute.Command))
             {
-                throw new InvalidOperationException(
+                throw new KubernetesConfigException(
                     $"External command to receive credentials for user '{user.Name}' must include a command to execute in '{configPath}'");
             }
 
             if (string.IsNullOrWhiteSpace(user.UserCredentials.Execute.ApiVersion))
             {
-                throw new InvalidOperationException(
+                throw new KubernetesConfigException(
                     $"External command to receive credentials for user '{user.Name}' is missing 'ApiVersion' in '{configPath}'");
             }
 
@@ -250,7 +262,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
             if (credentialsResponse.Status?.IsValid() != true)
             {
-                throw new InvalidOperationException(
+                throw new KubernetesConfigException(
                     $"Received bas response from external command to receive credentials for user '{user.Name}'");
             }
 
@@ -273,7 +285,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
         if (!credentialsFound)
         {
-            throw new InvalidOperationException(
+            throw new KubernetesConfigException(
                 $"User '{user.Name}' does not have appropriate authentication credentials in '{configPath}'");
         }
     }
@@ -282,7 +294,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
     {
         if (!Uri.TryCreate(server, UriKind.Absolute, out Uri? uri))
         {
-            throw new InvalidOperationException($"Bad server URL '{server}' for cluster '{clusterName}' in '{configPath}'");
+            throw new KubernetesConfigException($"Bad server URL '{server}' for cluster '{clusterName}' in '{configPath}'");
         }
 
         if (IPAddress.TryParse(uri.Host, out IPAddress? ipAddress))
