@@ -1,0 +1,36 @@
+﻿<Project>
+
+  <Target Name="GenerateKubernetesApi">
+
+    <!--
+    <MSBuild
+      Projects="$(KubernetesGeneratorProject)"
+      Targets="Build"
+      BuildInParallel="$(BuildInParallel)"
+      Properties="Configuration=$(Configuration)"
+      RemoveProperties="TargetFramework" />
+    -->
+
+    <ItemGroup>
+      <CurrentOpenApiReference>
+        <Command>dotnet run --no-build --framework net8.0 --project $(KubernetesGeneratorProject) --</Command>
+      </CurrentOpenApiReference>
+      <CurrentOpenApiReference>
+        <Command>%(Command) "%(FullPath)" "%(OutputPath)" %(Options)</Command>
+      </CurrentOpenApiReference>
+    </ItemGroup>
+
+    <Exec Command="%(CurrentOpenApiReference.Command)" LogStandardErrorAsError="true" />
+  </Target>
+
+  <!--
+    Fix for https://github.com/dotnet/aspnetcore/issues/31996
+    Allows multi-targeting when using OpenAPI client generation.
+   -->
+  <Target
+    Name="_TieInGenerateOpenApiCodeFix"
+    BeforeTargets="BeforeCompile"
+    Condition=" '$(OpenApiGenerateCodeOnBuild)' == 'true' "
+    DependsOnTargets="GenerateOpenApiCode" />
+
+</Project>
