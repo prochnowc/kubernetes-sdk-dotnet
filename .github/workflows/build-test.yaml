@@ -1,0 +1,39 @@
+name: Build and Test
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    name: .NET Build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            8.0.x
+      - name: Build
+        run: dotnet build --configuration Debug
+      - name: Test
+        run: dotnet test --configuration Debug --collect:"Code Coverage;Format=Cobertura" --logger trx --results-directory test-results --no-build
+      - name: Build packages
+        run: dotnet pack --configuration Debug --output ./artifacts --no-build
+#      - name: Upload coverage to Codecov
+#        uses: codecov/codecov-action@v3
+#        with:
+#          directory: ./test-results
+#          files: '*.cobertura.xml'
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ./test-results
+        if: ${{ always() }} # Always run this step even on failure
+
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
