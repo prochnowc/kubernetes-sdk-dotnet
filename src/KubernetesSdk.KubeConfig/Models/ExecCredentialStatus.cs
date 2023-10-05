@@ -2,7 +2,7 @@ using System;
 
 namespace Kubernetes.KubeConfig.Models;
 
-public class ExecCredentialsStatus
+public class ExecCredentialStatus
 {
     public DateTime? ExpirationTimestamp { get; set; }
 

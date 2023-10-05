@@ -1,9 +1,12 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using AppCore.Diagnostics;
 using Kubernetes.KubeConfig.Models;
 using Kubernetes.Serialization;
 
@@ -15,8 +18,16 @@ public sealed class ExternalCredentialProcess
     private readonly IKubernetesSerializerFactory _serializerFactory;
     private readonly ProcessStartInfo _processStartInfo;
 
+    public ExternalCredentialProcess(ExternalCredential credential)
+        : this(credential, KubernetesSerializerFactory.Instance)
+    {
+    }
+
     public ExternalCredentialProcess(ExternalCredential credential, IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(credential);
+        Ensure.Arg.NotNull(serializerFactory);
+
         _credential = credential;
         _serializerFactory = serializerFactory;
         _processStartInfo = CreateProcessStartInfo(credential);
@@ -26,14 +37,7 @@ public sealed class ExternalCredentialProcess
     {
         var process = new ProcessStartInfo();
 
-        // TODO: create model type
-        var execInfo = new Dictionary<string, object?>
-        {
-            { "apiVersion", config.ApiVersion },
-            { "kind", "ExecCredentials" },
-            { "spec", new Dictionary<string, bool> { { "interactive", Environment.UserInteractive } } },
-        };
-
+        var execInfo = new ExecCredential(config.ApiVersion, null, new ExecCredentialSpec(Environment.UserInteractive));
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/json");
 
         process.EnvironmentVariables.Add("KUBERNETES_EXEC_INFO", serializer.Serialize(execInfo));
@@ -57,7 +61,7 @@ public sealed class ExternalCredentialProcess
         return process;
     }
 
-    public ExecCredentialsResponse Execute(TimeSpan timeout)
+    public ExecCredential Execute(TimeSpan timeout)
     {
         List<string> errors = new ();
         List<string> output = new ();
@@ -97,13 +101,13 @@ public sealed class ExternalCredentialProcess
         if (!process.WaitForExit((int)timeout.TotalMilliseconds))
         {
             process.Kill();
-            throw new InvalidOperationException($"External process '{_processStartInfo.FileName}' timed out");
+            throw new TimeoutException($"External process '{_processStartInfo.FileName}' timed out");
         }
 
         return ProcessResponse(string.Concat(output));
     }
 
-    public async Task<ExecCredentialsResponse> ExecuteAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<ExecCredential> ExecuteAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(timeout);
@@ -148,7 +152,7 @@ public sealed class ExternalCredentialProcess
                     else
                     {
                         tcs.TrySetException(
-                            new InvalidOperationException(
+                            new TimeoutException(
                                 $"External process '{_processStartInfo.FileName}' timed out"));
                     }
                 },
@@ -171,14 +175,14 @@ public sealed class ExternalCredentialProcess
         }
     }
 
-    private ExecCredentialsResponse ProcessResponse(string output)
+    private ExecCredential ProcessResponse(string output)
     {
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/json");
 
-        ExecCredentialsResponse? response;
+        ExecCredential? response;
         try
         {
-            response = serializer.Deserialize<ExecCredentialsResponse>(output.AsSpan());
+            response = serializer.Deserialize<ExecCredential>(output.AsSpan());
             if (response == null)
                 throw new InvalidOperationException("Received empty response");
 

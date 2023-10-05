@@ -21,9 +21,6 @@ public sealed class KubernetesSerializerFactory : IKubernetesSerializerFactory
                 new KubernetesYamlSerializerProvider(),
             }));
 
-    private readonly ConcurrentDictionary<string, IKubernetesSerializer> _serializers =
-        new (StringComparer.OrdinalIgnoreCase);
-
     private readonly IEnumerable<IKubernetesSerializerProvider> _providers;
 
     /// <summary>
@@ -46,21 +43,14 @@ public sealed class KubernetesSerializerFactory : IKubernetesSerializerFactory
     {
         Ensure.Arg.NotNull(contentType);
 
-        IKubernetesSerializer serializer = _serializers.GetOrAdd(
-            contentType,
-            ct =>
-            {
-                IKubernetesSerializerProvider? provider = _providers.FirstOrDefault(
-                    p => string.Equals(ct, p.ContentType, StringComparison.OrdinalIgnoreCase));
+        IKubernetesSerializerProvider? provider = _providers.FirstOrDefault(
+            p => string.Equals(contentType, p.ContentType, StringComparison.OrdinalIgnoreCase));
 
-                if (provider == null)
-                {
-                    throw new ArgumentException($"No serializer registered for content type '{contentType}'");
-                }
+        if (provider == null)
+        {
+            throw new ArgumentException($"No serializer registered for content type '{contentType}'");
+        }
 
-                return provider.CreateSerializer();
-            });
-
-        return serializer;
+        return provider.CreateSerializer();
     }
 }

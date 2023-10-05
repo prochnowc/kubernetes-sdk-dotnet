@@ -11,7 +11,7 @@ public sealed class KubernetesYamlSerializerProvider : IKubernetesSerializerProv
     private readonly KubernetesYamlOptions _options;
 
     /// <inheritdoc />
-    public string ContentType => "application/json";
+    public string ContentType => "application/yaml";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KubernetesYamlSerializerProvider"/> class.

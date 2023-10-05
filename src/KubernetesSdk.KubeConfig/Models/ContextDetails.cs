@@ -1,36 +1,36 @@
 using System.Collections.Generic;
 using YamlDotNet.Serialization;
 
-namespace Kubernetes.KubeConfig.Models
+namespace Kubernetes.KubeConfig.Models;
+
+/// <summary>
+/// Represents a tuple of references to a cluster (how do I communicate with a kubernetes cluster),
+/// a user (how do I identify myself), and a namespace (what subset of resources do I want to work with)
+/// </summary>
+[YamlSerializable]
+public class ContextDetails
 {
     /// <summary>
-    /// Represents a tuple of references to a cluster (how do I communicate with a kubernetes cluster),
-    /// a user (how do I identify myself), and a namespace (what subset of resources do I want to work with)
+    /// Gets or sets the name of the cluster for this context.
     /// </summary>
-    public class ContextDetails
-    {
-        /// <summary>
-        /// Gets or sets the name of the cluster for this context.
-        /// </summary>
-        [YamlMember(Alias = "cluster")]
-        public string? Cluster { get; set; }
+    [YamlMember(Alias = "cluster")]
+    public string? Cluster { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the user for this context.
-        /// </summary>
-        [YamlMember(Alias = "user")]
-        public string? User { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the user for this context.
+    /// </summary>
+    [YamlMember(Alias = "user")]
+    public string? User { get; set; }
 
-        /// <summary>
-        /// Gets or sets the default namespace to use on unspecified requests.
-        /// </summary>
-        [YamlMember(Alias = "namespace")]
-        public string? Namespace { get; set; }
+    /// <summary>
+    /// Gets or sets the default namespace to use on unspecified requests.
+    /// </summary>
+    [YamlMember(Alias = "namespace")]
+    public string? Namespace { get; set; }
 
-        /// <summary>
-        /// Gets or sets additional information. This is useful for extenders so that reads and writes don't clobber unknown fields.
-        /// </summary>
-        [YamlMember(Alias = "extensions")]
-        public IList<NamedExtension> Extensions { get; set; } = new List<NamedExtension>();
-    }
+    /// <summary>
+    /// Gets or sets additional information. This is useful for extenders so that reads and writes don't clobber unknown fields.
+    /// </summary>
+    [YamlMember(Alias = "extensions")]
+    public List<NamedExtension> Extensions { get; set; } = new ();
 }

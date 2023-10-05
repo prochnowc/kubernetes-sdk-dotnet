@@ -1,22 +1,22 @@
 using YamlDotNet.Serialization;
 
-namespace Kubernetes.KubeConfig.Models
+namespace Kubernetes.KubeConfig.Models;
+
+/// <summary>
+/// Relates nicknames to auth information.
+/// </summary>
+[YamlSerializable]
+public class User
 {
     /// <summary>
-    /// Relates nicknames to auth information.
+    /// Gets or sets the auth information.
     /// </summary>
-    public class User
-    {
-        /// <summary>
-        /// Gets or sets the auth information.
-        /// </summary>
-        [YamlMember(Alias = "user")]
-        public UserCredentials? UserCredentials { get; set; }
+    [YamlMember(Alias = "user")]
+    public UserCredentials? UserCredentials { get; set; }
 
-        /// <summary>
-        /// Gets or sets the nickname for this auth information.
-        /// </summary>
-        [YamlMember(Alias = "name")]
-        public string Name { get; set; } = null!;
-    }
+    /// <summary>
+    /// Gets or sets the nickname for this auth information.
+    /// </summary>
+    [YamlMember(Alias = "name")]
+    public string Name { get; set; } = null!;
 }

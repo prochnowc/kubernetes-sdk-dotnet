@@ -2,7 +2,6 @@
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -32,11 +31,7 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
         _deserializer = options.BuildDeserializer();
     }
 
-    public async Task<T?> DeserializeAsync<
-        [DynamicallyAccessedMembers(
-            DynamicallyAccessedMemberTypes.NonPublicConstructors
-            | DynamicallyAccessedMemberTypes.PublicProperties)]
-        T>(
+    public async Task<T?> DeserializeAsync<T>(
         Stream stream,
         CancellationToken cancellationToken = default)
     {
@@ -47,25 +42,19 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
         return Deserialize<T>(content.AsSpan());
     }
 
-    public T? Deserialize<[DynamicallyAccessedMembers(
-            DynamicallyAccessedMemberTypes.NonPublicConstructors
-            | DynamicallyAccessedMemberTypes.PublicProperties)]
-        T>(Stream stream)
+    public T? Deserialize<T>(Stream stream)
     {
         using var reader = new StreamReader(stream, Encoding.UTF8, false, 1024, true);
         string content = reader.ReadToEnd();
         return Deserialize<T>(content.AsSpan());
     }
 
-    public T? Deserialize<[DynamicallyAccessedMembers(
-            DynamicallyAccessedMemberTypes.NonPublicConstructors
-            | DynamicallyAccessedMemberTypes.PublicProperties)]
-        T>(ReadOnlySpan<char> content)
+    public T? Deserialize<T>(ReadOnlySpan<char> content)
     {
         return _deserializer.Deserialize<T?>(content.ToString());
     }
 
-    public async Task SerializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+    public async Task SerializeAsync<T>(
         Stream stream,
         T value,
         CancellationToken cancellationToken = default)
@@ -76,14 +65,14 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
                     .ConfigureAwait(false);
     }
 
-    public void Serialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(Stream stream, T value)
+    public void Serialize<T>(Stream stream, T value)
     {
         using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
         string content = Serialize(value);
         writer.Write(content);
     }
 
-    public string Serialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(T value)
+    public string Serialize<T>(T value)
     {
         return value == null
             ? _serializer.Serialize(value)

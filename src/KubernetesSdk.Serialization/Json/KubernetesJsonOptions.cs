@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AppCore.Diagnostics;
 using Kubernetes.Models;
 
 namespace Kubernetes.Serialization.Json;
@@ -12,7 +14,9 @@ namespace Kubernetes.Serialization.Json;
 /// </summary>
 public sealed class KubernetesJsonOptions
 {
-    private static JsonSerializerOptions CreateDefaultOptions()
+    private static readonly ValueDefaultsInitializer<KubernetesJsonOptions> Defaults = new ();
+
+    private static JsonSerializerOptions CreateDefaultJsonSerializerOptions()
     {
         var options = new JsonSerializerOptions
         {
@@ -38,10 +42,23 @@ public sealed class KubernetesJsonOptions
         return options;
     }
 
-    internal static KubernetesJsonOptions Default => new ();
+    public static void ConfigureDefaults(Action<KubernetesJsonOptions> configure)
+    {
+        Defaults.Configure(configure);
+    }
+
+    internal static KubernetesJsonOptions Default => Defaults.Value;
 
     /// <summary>
     /// Gets the <see cref="T:System.Text.Json.JsonSerializerOptions"/>.
     /// </summary>
-    public JsonSerializerOptions JsonSerializerOptions { get; } = CreateDefaultOptions();
+    public JsonSerializerOptions JsonSerializerOptions { get; } = CreateDefaultJsonSerializerOptions();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubernetesJsonOptions"/> class.
+    /// </summary>
+    public KubernetesJsonOptions()
+    {
+        Defaults.PopulateValue(this);
+    }
 }

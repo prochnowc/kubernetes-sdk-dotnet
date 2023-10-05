@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AppCore.Diagnostics;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -14,11 +15,12 @@ namespace Kubernetes.Serialization.Yaml;
 /// </summary>
 public sealed class KubernetesYamlOptions
 {
-    private readonly List<Action<SerializerBuilder>> _configureSerializer = new ()
+    private static readonly ValueDefaultsInitializer<KubernetesYamlOptions> Defaults = new ();
+
+    private readonly List<Action<StaticSerializerBuilder>> _configureSerializer = new ()
     {
         b => b
              .DisableAliases()
-             .EnablePrivateConstructors()
              .WithNamingConvention(CamelCaseNamingConvention.Instance)
              .WithTypeInspector(i => new JsonAttributesTypeInspector(i))
              .WithTypeConverter(new IntstrIntOrStringConverter())
@@ -32,11 +34,10 @@ public sealed class KubernetesYamlOptions
                  | DefaultValuesHandling.OmitDefaults),
     };
 
-    private readonly List<Action<DeserializerBuilder>> _configureDeserializer = new ()
+    private readonly List<Action<StaticDeserializerBuilder>> _configureDeserializer = new ()
     {
         b => b
              .WithNamingConvention(CamelCaseNamingConvention.Instance)
-             .EnablePrivateConstructors()
              .WithTypeInspector(i => new JsonAttributesTypeInspector(i))
              .WithTypeConverter(new IntstrIntOrStringConverter())
              .WithTypeConverter(new ByteArrayStringConverter())
@@ -45,9 +46,14 @@ public sealed class KubernetesYamlOptions
              .IgnoreUnmatchedProperties(),
     };
 
-    internal static KubernetesYamlOptions Default => new ();
+    internal static KubernetesYamlOptions Default => Defaults.Value;
 
-    public void ConfigureSerializer(Action<SerializerBuilder> configureBuilder)
+    public static void ConfigureDefaults(Action<KubernetesYamlOptions> configure)
+    {
+        Defaults.Configure(configure);
+    }
+
+    public void ConfigureSerializer(Action<StaticSerializerBuilder> configureBuilder)
     {
         Ensure.Arg.NotNull(configureBuilder);
         _configureSerializer.Add(configureBuilder);
@@ -55,8 +61,8 @@ public sealed class KubernetesYamlOptions
 
     internal ISerializer BuildSerializer()
     {
-        var builder = new SerializerBuilder();
-        foreach (Action<SerializerBuilder> action in _configureSerializer)
+        var builder = new StaticSerializerBuilder(new YamlContextChain(Contexts.ToArray()));
+        foreach (Action<StaticSerializerBuilder> action in _configureSerializer)
         {
             action(builder);
         }
@@ -64,7 +70,7 @@ public sealed class KubernetesYamlOptions
         return builder.Build();
     }
 
-    public void ConfigureDeserializer(Action<DeserializerBuilder> configureBuilder)
+    public void ConfigureDeserializer(Action<StaticDeserializerBuilder> configureBuilder)
     {
         Ensure.Arg.NotNull(configureBuilder);
         _configureDeserializer.Add(configureBuilder);
@@ -72,12 +78,19 @@ public sealed class KubernetesYamlOptions
 
     internal IDeserializer BuildDeserializer()
     {
-        var builder = new DeserializerBuilder();
-        foreach (Action<DeserializerBuilder> action in _configureDeserializer)
+        var builder = new StaticDeserializerBuilder(new YamlContextChain(Contexts.ToArray()));
+        foreach (Action<StaticDeserializerBuilder> action in _configureDeserializer)
         {
             action(builder);
         }
 
         return builder.Build();
     }
+
+    public KubernetesYamlOptions()
+    {
+        Defaults.PopulateValue(this);
+    }
+
+    public IList<StaticContext> Contexts { get; } = new List<StaticContext> { new KubernetesYamlSerializerContext() };
 }

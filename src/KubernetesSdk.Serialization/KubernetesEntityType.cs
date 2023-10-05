@@ -6,6 +6,7 @@
 */
 
 using System;
+using AppCore.Diagnostics;
 using Kubernetes.Models;
 
 namespace Kubernetes.Serialization;
@@ -47,13 +48,9 @@ public sealed class KubernetesEntityType
         Plural = plural;
     }
 
-    public static KubernetesEntityType FromGroupVersionKind(string group, string apiVersion, string kind)
-    {
-        return KubernetesEntityTypeCache.Get(group, apiVersion, kind);
-    }
-
     public static KubernetesEntityType FromType(Type resourceType)
     {
+        Ensure.Arg.NotNull(resourceType);
         return KubernetesEntityTypeCache.Get(resourceType);
     }
 
@@ -65,6 +62,7 @@ public sealed class KubernetesEntityType
 
     public static KubernetesEntityType FromObject(IKubernetesObject obj)
     {
+        Ensure.Arg.NotNull(obj);
         return FromType(obj.GetType());
     }
 }

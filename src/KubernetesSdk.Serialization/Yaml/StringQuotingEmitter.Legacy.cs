@@ -7,7 +7,7 @@ namespace Kubernetes.Serialization.Yaml;
 
 public partial class StringQuotingEmitter
 {
-    private static readonly Regex QuotedRegexLegacy = new(
+    private static readonly Regex QuotedRegexLegacy = new (
         QuotedRegexPattern,
         RegexOptions.Compiled | RegexOptions.CultureInvariant,
         TimeSpan.FromMilliseconds(1000));

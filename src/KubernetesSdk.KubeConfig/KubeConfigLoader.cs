@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +11,10 @@ using Kubernetes.Serialization;
 
 namespace Kubernetes.KubeConfig;
 
-public class KubeConfigLoader
+/// <summary>
+/// Provides a loader for Kubernetes client configuration files.
+/// </summary>
+public sealed class KubeConfigLoader
 {
     private static readonly string DefaultKubeConfigPath =
         Path.Combine(
@@ -18,23 +24,48 @@ public class KubeConfigLoader
 
     private readonly IKubernetesSerializerFactory _serializerFactory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubeConfigLoader"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Uses the default <see cref="KubernetesSerializerFactory"/> instance.
+    /// </remarks>
     public KubeConfigLoader()
         : this(KubernetesSerializerFactory.Instance)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubeConfigLoader"/> class.
+    /// </summary>
+    /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public KubeConfigLoader(IKubernetesSerializerFactory serializerFactory)
     {
         Ensure.Arg.NotNull(serializerFactory);
         _serializerFactory = serializerFactory;
     }
 
+    /// <summary>
+    /// Gets the path to the Kubernetes client configuration file.
+    /// </summary>
+    /// <remarks>
+    /// Resolves the path from the environment variable <c>KUBECONFIG</c> if set; otherwise uses the default path.
+    /// </remarks>
+    /// <returns>The path to the Kubernetes client configuration file.</returns>
     public static string GetKubeConfigPath()
     {
-        return Environment.GetEnvironmentVariable("KUBECONFIG")
-               ?? DefaultKubeConfigPath;
+        string? kubeConfigPath = Environment.GetEnvironmentVariable("KUBECONFIG");
+        return !string.IsNullOrWhiteSpace(kubeConfigPath)
+            ? kubeConfigPath
+            : DefaultKubeConfigPath;
     }
 
+    /// <summary>
+    /// Loads the Kubernetes client configuration file using the specified path.
+    /// </summary>
+    /// <param name="path">The path to the Kubernetes client configuration file; If <c>null</c> the result from <see cref="GetKubeConfigPath"/> is used.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The loaded <see cref="V1Config"/>.</returns>
     public async Task<V1Config> LoadAsync(string? path = null, CancellationToken cancellationToken = default)
     {
         path ??= GetKubeConfigPath();
@@ -43,6 +74,14 @@ public class KubeConfigLoader
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Loads the Kubernetes client configuration file using the specified path.
+    /// </summary>
+    /// <param name="path">
+    /// The path to the Kubernetes client configuration file;
+    /// If <c>null</c> the result from <see cref="GetKubeConfigPath"/> is used.
+    /// </param>
+    /// <returns>The loaded <see cref="V1Config"/>.</returns>
     public V1Config Load(string? path = null)
     {
         path ??= GetKubeConfigPath();
@@ -50,6 +89,12 @@ public class KubeConfigLoader
         return Load(stream);
     }
 
+    /// <summary>
+    /// Loads the Kubernetes client configuration file from the specified stream.
+    /// </summary>
+    /// <param name="stream">The <see cref="Stream"/> used to read the configuration.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The loaded <see cref="V1Config"/>.</returns>
     public async Task<V1Config> LoadAsync(Stream stream, CancellationToken cancellationToken = default)
     {
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/yaml");
@@ -57,6 +102,11 @@ public class KubeConfigLoader
                                .ConfigureAwait(false) ?? new V1Config();
     }
 
+    /// <summary>
+    /// Loads the Kubernetes client configuration file from the specified stream.
+    /// </summary>
+    /// <param name="stream">The <see cref="Stream"/> used to read the configuration.</param>
+    /// <returns>The loaded <see cref="V1Config"/>.</returns>
     public V1Config Load(Stream stream)
     {
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/yaml");
