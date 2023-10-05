@@ -258,9 +258,9 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
             var externalCredentialProcess =
                 new ExternalCredentialProcess(user.UserCredentials.Execute, SerializerFactory);
 
-            ExecCredentialsResponse credentialsResponse = externalCredentialProcess.Execute(TimeSpan.FromMinutes(2));
+            ExecCredential credential = externalCredentialProcess.Execute(TimeSpan.FromMinutes(2));
 
-            if (credentialsResponse.Status?.IsValid() != true)
+            if (credential.Status?.IsValid() != true)
             {
                 throw new KubernetesConfigException(
                     $"Received bas response from external command to receive credentials for user '{user.Name}'");
@@ -269,18 +269,18 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
             // When reading ClientCertificateData from a config file it will be base64 encoded, and code later in the system (see CertUtils.GeneratePfx)
             // expects ClientCertificateData and ClientCertificateKeyData to be base64 encoded because of this. However the string returned by external
             // auth providers is the raw certificate and key PEM text, so we need to take that and base64 encoded it here so it can be decoded later.
-            options.ClientCertificateData = credentialsResponse.Status.ClientCertificateData == null
+            options.ClientCertificateData = credential.Status.ClientCertificateData == null
                 ? null
-                : Convert.ToBase64String(Encoding.ASCII.GetBytes(credentialsResponse.Status.ClientCertificateData));
+                : Convert.ToBase64String(Encoding.ASCII.GetBytes(credential.Status.ClientCertificateData));
 
-            options.ClientCertificateKeyData = credentialsResponse.Status.ClientKeyData == null
+            options.ClientCertificateKeyData = credential.Status.ClientKeyData == null
                 ? null
-                : Convert.ToBase64String(Encoding.ASCII.GetBytes(credentialsResponse.Status.ClientKeyData));
+                : Convert.ToBase64String(Encoding.ASCII.GetBytes(credential.Status.ClientKeyData));
 
             credentialsFound = true;
 
             // TODO: support client certificates here too.
-            options.TokenProvider = new ExternalCredentialTokenProvider(externalCredentialProcess, credentialsResponse);
+            options.TokenProvider = new ExternalCredentialTokenProvider(externalCredentialProcess, credential);
         }
 
         if (!credentialsFound)

@@ -1,3 +1,6 @@
+// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -27,7 +30,7 @@ public class KubeConfigOptionsProviderTests
         var serializer = Substitute.For<IKubernetesSerializerFactory>();
         var provider = Substitute.ForPartsOf<KubeConfigOptionsProvider>(authProviderOptionBinder, serializer);
         provider.Protected("LoadConfig", Arg.Any<string>())
-                .Returns(ci => config());
+                .Returns(_ => config());
 
         return provider;
     }

@@ -15,6 +15,7 @@ namespace Kubernetes.Serialization.Json;
 [JsonSerializable(typeof(WatchEvent<{{ model.Type }}>))]
 {{ end -}}
 {{~ end ~}}
+[JsonSerializable(typeof(VersionInfo))]
 public partial class KubernetesJsonSerializerContext
 {
 }

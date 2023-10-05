@@ -10,12 +10,12 @@ namespace Kubernetes.Client.Authentication;
 public sealed class ExternalCredentialTokenProvider : ITokenProvider
 {
     private readonly ExternalCredentialProcess _process;
-    private ExecCredentialsResponse? _response;
+    private ExecCredential? _credential;
 
-    internal ExternalCredentialTokenProvider(ExternalCredentialProcess process, ExecCredentialsResponse response)
+    internal ExternalCredentialTokenProvider(ExternalCredentialProcess process, ExecCredential credential)
     {
         _process = process;
-        _response = response;
+        _credential = credential;
     }
 
     public ExternalCredentialTokenProvider(ExternalCredential credential, IKubernetesSerializerFactory serializerFactory)
@@ -25,13 +25,13 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
 
     private bool NeedsRefresh()
     {
-        if (_response?.Status == null)
+        if (_credential?.Status == null)
             return true;
 
-        if (_response.Status.ExpirationTimestamp == null)
+        if (_credential.Status.ExpirationTimestamp == null)
             return false;
 
-        return DateTime.UtcNow.AddSeconds(30) > _response.Status.ExpirationTimestamp;
+        return DateTime.UtcNow.AddSeconds(30) > _credential.Status.ExpirationTimestamp;
     }
 
     public async Task<string> GetTokenAsync(bool forceRefresh, CancellationToken cancellationToken)
@@ -42,15 +42,15 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
                 .ConfigureAwait(false);
         }
 
-        return _response!.Status!.Token!; // already validated
+        return _credential!.Status!.Token!; // already validated
     }
 
     private async Task RefreshTokenAsync(CancellationToken cancellationToken)
     {
-        _response = await _process.ExecuteAsync(TimeSpan.FromMinutes(2), cancellationToken)
+        _credential = await _process.ExecuteAsync(TimeSpan.FromMinutes(2), cancellationToken)
                                   .ConfigureAwait(false);
 
-        if (_response.Status?.IsValid() != true)
+        if (_credential.Status?.IsValid() != true)
         {
             throw new InvalidOperationException(
                 $"Received bas response from external command to receive credentials");

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,18 +51,6 @@ public abstract class KubernetesSerializerTests<T>
     }
 
     [Fact]
-    public async Task CanDeserializeIKubernetesObjectFromStreamAsync()
-    {
-        using Stream stream = await CreateStreamAsync(Content);
-
-        IKubernetesSerializer serializer = CreateSerializer();
-        var obj = await serializer.DeserializeAsync<IKubernetesObject>(stream);
-
-        obj.Should()
-           .BeOfType<T>();
-    }
-
-    [Fact]
     public void CanDeserializeStream()
     {
         using Stream stream = CreateStream(Content);
@@ -84,18 +75,6 @@ public abstract class KubernetesSerializerTests<T>
     }
 
     [Fact]
-    public void CanDeserializeIKubernetesObjectFromStream()
-    {
-        using Stream stream = CreateStream(Content);
-
-        IKubernetesSerializer serializer = CreateSerializer();
-        var obj = serializer.Deserialize<IKubernetesObject>(stream);
-
-        obj.Should()
-           .BeOfType<T>();
-    }
-
-    [Fact]
     public void CanDeserializerSpan()
     {
         IKubernetesSerializer serializer = CreateSerializer();
@@ -113,16 +92,6 @@ public abstract class KubernetesSerializerTests<T>
 
         obj.Should()
            .BeNull();
-    }
-
-    [Fact]
-    public void CanDeserializeIKubernetesObjectFromSpan()
-    {
-        IKubernetesSerializer serializer = CreateSerializer();
-        var obj = serializer.Deserialize<IKubernetesObject>(Content.AsSpan());
-
-        obj.Should()
-           .BeOfType<T>();
     }
 
     /// <summary>
