@@ -21,5 +21,5 @@ public interface IKubernetesList<T> : IKubernetesObject<V1ListMeta?>
     /// Gets or sets the list of Kubernetes objects.
     /// </summary>
     [JsonPropertyName("items")]
-    public IList<T> Items { get; set; }
+    public List<T> Items { get; set; }
 }

@@ -48,7 +48,7 @@ public sealed partial class StringQuotingEmitter : ChainedEventEmitter
                 break;
 
             case TypeCode.String:
-                string val = eventInfo.Source.Value!.ToString();
+                string val = (string)eventInfo.Source.Value!;
                 if (QuotedRegex().IsMatch(val))
                 {
                     eventInfo.Style = ScalarStyle.DoubleQuoted;

@@ -127,14 +127,14 @@ internal sealed class TypeNameResolver
         if (p.IsArray)
         {
             // getType
-            return $"IList<{GetTypeName(p.Item, p)}>" + (p.IsRequired
+            return $"List<{GetTypeName(p.Item, p)}>" + (p.IsRequired
                 ? string.Empty
                 : "?");
         }
 
         if (p.IsDictionary && p.AdditionalPropertiesSchema != null)
         {
-            return $"IDictionary<string, {GetTypeName(p.AdditionalPropertiesSchema, p)}>" + (p.IsRequired
+            return $"Dictionary<string, {GetTypeName(p.AdditionalPropertiesSchema, p)}>" + (p.IsRequired
                 ? string.Empty
                 : "?");
         }
@@ -274,12 +274,12 @@ internal sealed class TypeNameResolver
         {
             if (schema.IsArray)
             {
-                return $"IList<{GetTypeName(schema.Item, parent)}>";
+                return $"List<{GetTypeName(schema.Item, parent)}>";
             }
 
             if (schema.IsDictionary && schema.AdditionalPropertiesSchema != null)
             {
-                return $"IDictionary<string, {GetTypeName(schema.AdditionalPropertiesSchema, parent)}>";
+                return $"Dictionary<string, {GetTypeName(schema.AdditionalPropertiesSchema, parent)}>";
             }
 
             if (schema.Reference != null)

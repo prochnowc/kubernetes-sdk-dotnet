@@ -15,7 +15,7 @@ public class NamedExtension
     public string? Name { get; set; }
 
     /// <summary>
-    /// Get or sets the extension information.
+    /// Gets or sets the extension information.
     /// </summary>
     [YamlMember(Alias = "extension")]
     public object? Extension { get; set; }

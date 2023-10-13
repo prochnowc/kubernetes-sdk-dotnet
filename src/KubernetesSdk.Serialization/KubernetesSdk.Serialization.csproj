@@ -4,7 +4,7 @@
     <TargetFrameworks>net462;netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>Kubernetes.Serialization</RootNamespace>
     <Description>.NET Serialization for the Kubernetes open source container orchestrator.</Description>
-    <KubernetesGeneratorOptions>jsoncontext</KubernetesGeneratorOptions>
+    <KubernetesGeneratorOptions>jsoncontext,yamlcontext</KubernetesGeneratorOptions>
   </PropertyGroup>
 
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.props" />
@@ -15,8 +15,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="YamlDotNet" Version="13.4.0" />
-    <PackageReference Include="Vecc.YamlDotNet.Analyzers.StaticGenerator" Version="13.4.0" />
+    <PackageReference Include="YamlDotNet" Version="13.7.0" />
+    <PackageReference Include="Vecc.YamlDotNet.Analyzers.StaticGenerator" Version="13.7.0" />
   </ItemGroup>
 
   <ItemGroup>

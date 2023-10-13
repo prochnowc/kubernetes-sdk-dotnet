@@ -30,6 +30,10 @@ public static class Program
                     generators.Add(new JsonSerializerContextGenerator());
                     break;
 
+                case "yamlcontext":
+                    generators.Add(new YamlSerializerContextGenerator());
+                    break;
+
                 default:
                     throw new InvalidOperationException($"Unknown code generator {generatorName}");
             }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using Kubernetes.Models;
 using YamlDotNet.Serialization;
 

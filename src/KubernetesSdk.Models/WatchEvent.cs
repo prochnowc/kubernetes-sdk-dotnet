@@ -31,6 +31,13 @@ public class WatchEvent<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="WatchEvent{T}"/> class.
     /// </summary>
+    public WatchEvent()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WatchEvent{T}"/> class.
+    /// </summary>
     /// <param name="type">The type of the event.</param>
     /// <param name="object">The Kubernetes object that raised the event.</param>
     public WatchEvent(WatchEventType type, T? @object)
