@@ -23,10 +23,30 @@ internal sealed class GeneratorExecutionContext
         if (!Directory.Exists(OutputPath))
             Directory.CreateDirectory(OutputPath);
 
+        string filePath = Path.Combine(OutputPath, fileName);
+
 #if NETSTANDARD2_0
-        File.WriteAllText(Path.Combine(OutputPath, fileName), content, Encoding.UTF8);
+        string? existingContent = null;
+        if (File.Exists(filePath))
+        {
+            existingContent = File.ReadAllText(filePath, Encoding.UTF8);
+        }
+
+        if (!string.Equals(existingContent, content))
+        {
+            File.WriteAllText(filePath, content, Encoding.UTF8);
+        }
 #else
-        await File.WriteAllTextAsync(Path.Combine(OutputPath, fileName), content, Encoding.UTF8, cancellationToken);
+        string? existingContent = null;
+        if (File.Exists(filePath))
+        {
+            existingContent = await File.ReadAllTextAsync(filePath, Encoding.UTF8, cancellationToken);
+        }
+
+        if (!string.Equals(existingContent, content))
+        {
+            await File.WriteAllTextAsync(filePath, content, Encoding.UTF8, cancellationToken);
+        }
 #endif
     }
 }
