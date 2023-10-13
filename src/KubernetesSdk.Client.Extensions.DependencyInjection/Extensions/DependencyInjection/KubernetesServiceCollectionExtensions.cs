@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Kubernetes.Client.HttpMessageHandlers;
 using Kubernetes.Client.KubeConfig;
@@ -13,8 +14,10 @@ namespace Kubernetes.Client.Extensions.DependencyInjection;
 
 public static class KubernetesServiceCollectionExtensions
 {
-    private static T GetOptions<T>(this IServiceProvider sp, string? name = null)
-        where T : class
+    private static T GetOptions<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(
+        this IServiceProvider sp,
+        string? name = null)
     {
         return sp.GetRequiredService<IOptionsMonitor<T>>()
                  .Get(name ?? Options.DefaultName);

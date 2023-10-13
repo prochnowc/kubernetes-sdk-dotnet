@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kubernetes.Client.Extensions.DependencyInjection;
@@ -31,7 +32,9 @@ public sealed class KubernetesClientBuilder
         return this;
     }
 
-    private KubernetesClientBuilder ConfigureFrom<TProvider>(Action<TProvider>? configure = null)
+    private KubernetesClientBuilder ConfigureFrom<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TProvider>(
+        Action<TProvider>? configure = null)
         where TProvider : class, IKubernetesClientOptionsProvider
     {
         Services.Configure<KubernetesClientBuilderOptions>(o => o.UseDefaultConfig = false);
