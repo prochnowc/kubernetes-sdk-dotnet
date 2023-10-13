@@ -61,7 +61,7 @@ public sealed class KubernetesYamlOptions
 
     internal ISerializer BuildSerializer()
     {
-        var builder = new StaticSerializerBuilder(new YamlContextChain(Contexts.ToArray()));
+        var builder = new StaticSerializerBuilder(new YamlContextChain(Contexts));
         foreach (Action<StaticSerializerBuilder> action in _configureSerializer)
         {
             action(builder);
@@ -78,7 +78,7 @@ public sealed class KubernetesYamlOptions
 
     internal IDeserializer BuildDeserializer()
     {
-        var builder = new StaticDeserializerBuilder(new YamlContextChain(Contexts.ToArray()));
+        var builder = new StaticDeserializerBuilder(new YamlContextChain(Contexts));
         foreach (Action<StaticDeserializerBuilder> action in _configureDeserializer)
         {
             action(builder);
