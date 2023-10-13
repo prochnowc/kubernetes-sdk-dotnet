@@ -6,10 +6,18 @@ using System.Threading;
 using Kubernetes.KubeConfig.Models;
 using Kubernetes.Serialization;
 
-if (args.Length > 0 && args[0] == "wait")
+if (args.Length > 0)
 {
-    Thread.Sleep(TimeSpan.FromSeconds(60));
-    return 0;
+    if (args[0] == "wait")
+    {
+        Thread.Sleep(TimeSpan.FromSeconds(60));
+        return 0;
+    }
+
+    if (args[0] == "empty")
+    {
+        return 0;
+    }
 }
 
 string execInfo = Environment.GetEnvironmentVariable("KUBERNETES_EXEC_INFO") !;

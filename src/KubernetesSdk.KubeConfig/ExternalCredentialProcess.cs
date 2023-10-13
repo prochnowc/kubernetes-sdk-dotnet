@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using AppCore.Diagnostics;
@@ -184,21 +185,22 @@ public sealed class ExternalCredentialProcess
         {
             response = serializer.Deserialize<ExecCredential>(output.AsSpan());
             if (response == null)
-                throw new InvalidOperationException("Received empty response");
+                throw new ApplicationException("Received empty response");
 
             if (!string.Equals(response.ApiVersion, _credential.ApiVersion))
             {
-                throw new InvalidOperationException(
-                    $"Received bad response because received API version '{response.ApiVersion}' does not match '{_credential.ApiVersion}'");
+                throw new NotSupportedException(
+                    $"Received unsupported API version '{response.ApiVersion}', expected '{_credential.ApiVersion}'");
             }
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException(
-                $"Failed to process response from external process '{_processStartInfo.FileName}'",
+            throw new AuthenticationException(
+                $"Failed to receive credentials from external process '{_processStartInfo.FileName}'",
                 error);
         }
 
+        // TODO: do we need to check the exit code of the process?
         return response;
     }
 }

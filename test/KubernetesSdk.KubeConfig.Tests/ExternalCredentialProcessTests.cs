@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kubernetes.KubeConfig.Models;
@@ -106,5 +107,20 @@ public class ExternalCredentialProcessTests
 
         Assert.Throws<TimeoutException>(
             () => process.Execute(TimeSpan.FromSeconds(10)));
+    }
+
+    [Fact]
+    public async Task ExecuteAsyncThrowsForEmptyResponse()
+    {
+        var process = new ExternalCredentialProcess(
+            new ExternalCredential
+            {
+                ApiVersion = "v1",
+                Command = GetCommand(),
+                Arguments = { "empty" },
+            });
+
+        await Assert.ThrowsAsync<AuthenticationException>(
+            async () => await process.ExecuteAsync(TimeSpan.FromSeconds(10)));
     }
 }
