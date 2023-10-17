@@ -3,7 +3,7 @@
   <Target Name="GenerateKubernetesApi">
     <ItemGroup>
       <CurrentOpenApiReference>
-        <Command>dotnet run --no-build --framework net8.0 --project $(KubernetesGeneratorProject) --</Command>
+        <Command>dotnet run --no-build -c $(Configuration) --framework net8.0 --project $(KubernetesGeneratorProject) --</Command>
       </CurrentOpenApiReference>
       <CurrentOpenApiReference>
         <Command>%(Command) "%(FullPath)" "%(OutputPath)" %(Options)</Command>
