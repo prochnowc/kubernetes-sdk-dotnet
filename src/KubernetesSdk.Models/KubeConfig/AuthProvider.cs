@@ -1,23 +1,25 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using YamlDotNet.Serialization;
 
-namespace Kubernetes.KubeConfig.Models;
+namespace Kubernetes.Models.KubeConfig;
 
 /// <summary>
 /// Contains information that describes identity information.  This is use to tell the kubernetes cluster who you are.
 /// </summary>
-[YamlSerializable]
 public class AuthProvider
 {
     /// <summary>
     /// Gets or sets the nickname for this auth provider.
     /// </summary>
-    [YamlMember(Alias = "name")]
+    [JsonPropertyName("name")]
+    [YamlMember(Alias = "name", ApplyNamingConventions = false)]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the configuration for this auth provider
     /// </summary>
-    [YamlMember(Alias = "config")]
+    [JsonPropertyName("config")]
+    [YamlMember(Alias = "config", ApplyNamingConventions = false)]
     public Dictionary<string, string> Config { get; set; } = new ();
 }

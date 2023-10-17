@@ -6,10 +6,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AppCore.Diagnostics;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 
-namespace Kubernetes.KubeConfig;
+namespace Kubernetes.Client.KubeConfig;
 
 /// <summary>
 /// Provides a loader for Kubernetes client configuration files.

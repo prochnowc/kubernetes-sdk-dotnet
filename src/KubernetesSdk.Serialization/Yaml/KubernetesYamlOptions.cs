@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AppCore.Diagnostics;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -21,7 +20,6 @@ public sealed class KubernetesYamlOptions
     {
         b => b
              .DisableAliases()
-             .WithNamingConvention(CamelCaseNamingConvention.Instance)
              .WithTypeInspector(i => new JsonAttributesTypeInspector(i))
              .WithTypeConverter(new IntstrIntOrStringConverter())
              .WithTypeConverter(new ByteArrayStringConverter())
@@ -37,7 +35,6 @@ public sealed class KubernetesYamlOptions
     private readonly List<Action<StaticDeserializerBuilder>> _configureDeserializer = new ()
     {
         b => b
-             .WithNamingConvention(CamelCaseNamingConvention.Instance)
              .WithTypeInspector(i => new JsonAttributesTypeInspector(i))
              .WithTypeConverter(new IntstrIntOrStringConverter())
              .WithTypeConverter(new ByteArrayStringConverter())

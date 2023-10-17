@@ -8,10 +8,10 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using AppCore.Diagnostics;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 
-namespace Kubernetes.KubeConfig;
+namespace Kubernetes.Client.KubeConfig;
 
 public sealed class ExternalCredentialProcess
 {
@@ -38,7 +38,14 @@ public sealed class ExternalCredentialProcess
     {
         var process = new ProcessStartInfo();
 
-        var execInfo = new ExecCredential(config.ApiVersion, null, new ExecCredentialSpec(Environment.UserInteractive));
+        var execInfo = new ExecCredential(
+            config.ApiVersion,
+            null,
+            new ExecCredentialSpec
+            {
+                Interactive = Environment.UserInteractive,
+            });
+
         IKubernetesSerializer serializer = _serializerFactory.CreateSerializer("application/json");
 
         process.EnvironmentVariables.Add("KUBERNETES_EXEC_INFO", serializer.Serialize(execInfo));

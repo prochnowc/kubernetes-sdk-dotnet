@@ -36,21 +36,21 @@ public sealed class JsonAttributesTypeInspector : TypeInspectorSkeleton
                .Select(
                    p =>
                    {
-                       var properties = new PropertyDescriptor(p);
+                       var property = new PropertyDescriptor(p);
 
                        var nameAttribute = p.GetCustomAttribute<JsonPropertyNameAttribute>();
                        if (nameAttribute != null)
                        {
-                           properties.Name = nameAttribute.Name;
+                           property.Name = nameAttribute.Name;
                        }
 
                        var orderAttribute = p.GetCustomAttribute<JsonPropertyOrderAttribute>();
                        if (orderAttribute != null)
                        {
-                           properties.Order = orderAttribute.Order;
+                           property.Order = orderAttribute.Order;
                        }
 
-                       return (IPropertyDescriptor)properties;
+                       return (IPropertyDescriptor)property;
                    })
                .OrderBy(p => p.Order);
     }

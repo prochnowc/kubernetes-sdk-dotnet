@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 
-namespace Kubernetes.KubeConfig;
+namespace Kubernetes.Client.KubeConfig;
 
 public class ExternalCredentialProcessTests
 {
@@ -20,20 +21,32 @@ public class ExternalCredentialProcessTests
     private const string TargetFramework = "net462";
     #endif
 
-    private const string CredentialProjectName = "KubernetesSdk.KubeConfig.Credential";
+    private const string CredentialProjectName = "KubernetesSdk.ExecCredential";
 
     private static string GetCommand()
     {
-        string command =
-            @$"..\..\..\..\{CredentialProjectName}\bin\{Configuration}\{TargetFramework}\{CredentialProjectName}";
-
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            command += ".exe";
-
-        return command;
+        return "dotnet";
     }
 
-    private void AssetExecCredentialsResponse(ExecCredential response)
+    private static List<string> GetArguments(params string[] args)
+    {
+        var result = new List<string>()
+        {
+            "run",
+            "--project",
+            @$"..\..\..\..\{CredentialProjectName}\{CredentialProjectName}.csproj",
+            "-f",
+            TargetFramework,
+            "-c",
+            Configuration,
+            "--no-build",
+        };
+
+        result.AddRange(args);
+        return result;
+    }
+
+    private void AssertExecCredentialsResponse(ExecCredential response)
     {
         response.Status.Should()
                 .NotBeNull();
@@ -59,10 +72,11 @@ public class ExternalCredentialProcessTests
             {
                 ApiVersion = "v1",
                 Command = GetCommand(),
+                Arguments = GetArguments(),
             });
 
         ExecCredential response = await process.ExecuteAsync(TimeSpan.FromSeconds(10));
-        AssetExecCredentialsResponse(response);
+        AssertExecCredentialsResponse(response);
     }
 
     [Fact]
@@ -73,10 +87,11 @@ public class ExternalCredentialProcessTests
             {
                 ApiVersion = "v1",
                 Command = GetCommand(),
+                Arguments = GetArguments(),
             });
 
         ExecCredential response = process.Execute(TimeSpan.FromSeconds(10));
-        AssetExecCredentialsResponse(response);
+        AssertExecCredentialsResponse(response);
     }
 
     [Fact]
@@ -87,7 +102,7 @@ public class ExternalCredentialProcessTests
             {
                 ApiVersion = "v1",
                 Command = GetCommand(),
-                Arguments = { "wait" },
+                Arguments = GetArguments("wait"),
             });
 
         await Assert.ThrowsAsync<TimeoutException>(
@@ -102,7 +117,7 @@ public class ExternalCredentialProcessTests
             {
                 ApiVersion = "v1",
                 Command = GetCommand(),
-                Arguments = { "wait" },
+                Arguments = GetArguments("wait"),
             });
 
         Assert.Throws<TimeoutException>(
@@ -117,10 +132,25 @@ public class ExternalCredentialProcessTests
             {
                 ApiVersion = "v1",
                 Command = GetCommand(),
-                Arguments = { "empty" },
+                Arguments = GetArguments("empty"),
             });
 
         await Assert.ThrowsAsync<AuthenticationException>(
             async () => await process.ExecuteAsync(TimeSpan.FromSeconds(10)));
+    }
+
+    [Fact]
+    public void ExecuteThrowsForEmptyResponse()
+    {
+        var process = new ExternalCredentialProcess(
+            new ExternalCredential
+            {
+                ApiVersion = "v1",
+                Command = GetCommand(),
+                Arguments = GetArguments("empty"),
+            });
+
+        Assert.Throws<AuthenticationException>(
+            () => process.Execute(TimeSpan.FromSeconds(10)));
     }
 }

@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\KubernetesSdk.Client\KubernetesSdk.Client.csproj" />
+    <None Include="assets/*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KubernetesSdk.Client\KubernetesSdk.Client.csproj" />
+  </ItemGroup>
+  
 </Project>

@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
-using Kubernetes.Client.KubeConfig;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 using NSubstitute;
 
-namespace Kubernetes.Client;
+namespace Kubernetes.Client.KubeConfig;
 
 public class KubeConfigOptionsProviderTests
 {

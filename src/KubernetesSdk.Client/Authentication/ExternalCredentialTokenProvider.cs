@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Kubernetes.KubeConfig;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Client.KubeConfig;
+using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 
 namespace Kubernetes.Client.Authentication;

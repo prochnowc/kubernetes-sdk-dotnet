@@ -1,4 +1,4 @@
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 
 namespace Kubernetes.Client.KubeConfig;
 

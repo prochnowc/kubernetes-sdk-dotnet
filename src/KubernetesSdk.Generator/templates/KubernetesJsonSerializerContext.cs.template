@@ -6,6 +6,7 @@
 
 using System.Text.Json.Serialization;
 using Kubernetes.Models;
+using Kubernetes.Models.KubeConfig;
 
 namespace Kubernetes.Serialization.Json;
 
@@ -16,6 +17,8 @@ namespace Kubernetes.Serialization.Json;
 {{ end -}}
 {{~ end ~}}
 [JsonSerializable(typeof(VersionInfo))]
+[JsonSerializable(typeof(V1Config))]
+[JsonSerializable(typeof(ExecCredential))]
 public partial class KubernetesJsonSerializerContext
 {
 }

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Kubernetes.Models;
+using System.Text.Json.Serialization;
 using YamlDotNet.Serialization;
 
-namespace Kubernetes.KubeConfig.Models;
+namespace Kubernetes.Models.KubeConfig;
 
 /// <summary>
 /// kubeconfig configuration model. Holds the information needed to build connect to remote
@@ -13,48 +13,66 @@ namespace Kubernetes.KubeConfig.Models;
 /// Should update MergeKubeConfig in KubernetesClientConfiguration.ConfigFile.cs if updated.
 /// </remarks>
 [KubernetesEntity("", "v1", "Config")]
-[YamlSerializable]
 public class V1Config : IKubernetesObject
 {
     /// <summary>
-    /// Gets or sets general information to be use for CLI interactions
+    /// Gets or sets general information to be use for CLI interactions.
     /// </summary>
-    [YamlMember(Alias = "preferences")]
+    [JsonPropertyName("preferences")]
+    [YamlMember(Alias = "preferences", ApplyNamingConventions = false)]
     public Dictionary<string, object> Preferences { get; set; } = new ();
 
-    [YamlMember(Alias = "apiVersion")]
+    [JsonPropertyName("apiVersion")]
+    [YamlMember(Alias = "apiVersion", ApplyNamingConventions = false)]
     public string? ApiVersion { get; set; }
 
-    [YamlMember(Alias = "kind")]
+    [JsonPropertyName("kind")]
+    [YamlMember(Alias = "kind", ApplyNamingConventions = false)]
     public string? Kind { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the context that you would like to use by default.
     /// </summary>
+    [JsonPropertyName("current-context")]
     [YamlMember(Alias = "current-context", ApplyNamingConventions = false)]
     public string? CurrentContext { get; set; }
 
     /// <summary>
     /// Gets or sets a map of referencable names to context configs.
     /// </summary>
-    [YamlMember(Alias = "contexts")]
+    [JsonPropertyName("contexts")]
+    [YamlMember(Alias = "contexts", ApplyNamingConventions = false)]
     public List<Context> Contexts { get; set; } = new ();
 
     /// <summary>
     /// Gets or sets a map of referencable names to cluster configs.
     /// </summary>
-    [YamlMember(Alias = "clusters")]
+    [JsonPropertyName("clusters")]
+    [YamlMember(Alias = "clusters", ApplyNamingConventions = false)]
     public List<Cluster> Clusters { get; set; } = new ();
 
     /// <summary>
-    /// Gets or sets a map of referencable names to user configs
+    /// Gets or sets a map of referencable names to user configs.
     /// </summary>
-    [YamlMember(Alias = "users")]
+    [JsonPropertyName("users")]
+    [YamlMember(Alias = "users", ApplyNamingConventions = false)]
     public List<User> Users { get; set; } = new ();
 
     /// <summary>
     /// Gets or sets additional information. This is useful for extenders so that reads and writes don't clobber unknown fields.
     /// </summary>
-    [YamlMember(Alias = "extensions")]
+    [JsonPropertyName("extensions")]
+    [YamlMember(Alias = "extensions", ApplyNamingConventions = false)]
     public List<NamedExtension> Extensions { get; set; } = new ();
+
+    public V1Config()
+    {
+        Init();
+    }
+
+    private void Init()
+    {
+        ApiVersion ??= "v1";
+        Kind = "Config";
+    }
 }

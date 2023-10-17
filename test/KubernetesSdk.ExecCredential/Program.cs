@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 
 if (args.Length > 0)
@@ -23,10 +23,18 @@ if (args.Length > 0)
 string execInfo = Environment.GetEnvironmentVariable("KUBERNETES_EXEC_INFO") !;
 IKubernetesSerializer serializer = KubernetesSerializerFactory.Instance.CreateSerializer("application/json");
 
-var credentials = serializer.Deserialize<ExecCredential>(execInfo.AsSpan());
-if (credentials == null)
+ExecCredential? credentials;
+try
 {
-    Console.WriteLine("Failed to deserialize 'ExecCredential'");
+    credentials = serializer.Deserialize<ExecCredential>(execInfo.AsSpan());
+    if (credentials == null)
+    {
+        throw new ApplicationException("Received empty credential.");
+    }
+}
+catch (Exception error)
+{
+    Console.WriteLine($"Failed to deserialize 'ExecCredential': {error.Message}");
     return 1;
 }
 

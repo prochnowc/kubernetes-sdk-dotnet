@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
 
 namespace Kubernetes.Models;
 
@@ -19,9 +20,9 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     {{~ for property in Model.Properties ~}}
     {{ property.Description | xml_doc "summary" ~}}
     [JsonPropertyName("{{ property.Name }}")]
+    [YamlMember(Alias = "{{ property.Name }}", ApplyNamingConventions = false)]
     public {{ property.Type }} {{ property.PropertyName }} { get; set; }
     {{~ end ~}}
-
 
     public {{ Model.Type }}()
     {

@@ -6,12 +6,10 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Kubernetes.Client.Authentication;
-using Kubernetes.Client.KubeConfig;
-using Kubernetes.KubeConfig;
-using Kubernetes.KubeConfig.Models;
+using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 
-namespace Kubernetes.Client;
+namespace Kubernetes.Client.KubeConfig;
 
 /// <summary>
 /// Populates <see cref="KubernetesClientOptions"/> from kubeconfig file.

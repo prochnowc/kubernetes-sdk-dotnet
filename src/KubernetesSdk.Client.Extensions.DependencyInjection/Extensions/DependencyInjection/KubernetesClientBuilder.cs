@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Kubernetes.Client.KubeConfig;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Kubernetes.Client.Extensions.DependencyInjection;
 
@@ -39,11 +41,12 @@ public sealed class KubernetesClientBuilder
     {
         Services.Configure<KubernetesClientBuilderOptions>(o => o.UseDefaultConfig = false);
 
+        Services.TryAddTransient<TProvider>();
+
         Services.AddOptions<KubernetesClientOptions>(Name)
-                .Configure<IServiceProvider>(
-                    (o, sp) =>
+                .Configure<TProvider>(
+                    (o, provider) =>
                     {
-                        var provider = ActivatorUtilities.CreateInstance<TProvider>(sp);
                         configure?.Invoke(provider);
                         provider.BindOptions(o);
                     });

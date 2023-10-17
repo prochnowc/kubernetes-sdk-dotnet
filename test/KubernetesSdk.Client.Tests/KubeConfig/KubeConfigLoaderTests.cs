@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Kubernetes.KubeConfig;
+namespace Kubernetes.Client.KubeConfig;
 
 public class KubeConfigLoaderTests
 {

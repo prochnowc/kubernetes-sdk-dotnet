@@ -6,6 +6,7 @@
 
 using YamlDotNet.Serialization;
 using Kubernetes.Models;
+using Kubernetes.Models.KubeConfig;
 
 namespace Kubernetes.Serialization.Yaml;
 
@@ -16,6 +17,20 @@ namespace Kubernetes.Serialization.Yaml;
 {{ end -}}
 {{~ end ~}}
 [YamlSerializable(typeof(VersionInfo))]
+// KubeConfig models
+[YamlSerializable(typeof(AuthProvider))]
+[YamlSerializable(typeof(Cluster))]
+[YamlSerializable(typeof(ClusterEndpoint))]
+[YamlSerializable(typeof(Context))]
+[YamlSerializable(typeof(ContextDetails))]
+[YamlSerializable(typeof(ExecCredential))]
+[YamlSerializable(typeof(ExecCredentialSpec))]
+[YamlSerializable(typeof(ExecCredentialStatus))]
+[YamlSerializable(typeof(ExternalCredential))]
+[YamlSerializable(typeof(NamedExtension))]
+[YamlSerializable(typeof(User))]
+[YamlSerializable(typeof(UserCredentials))]
+[YamlSerializable(typeof(V1Config))]
 public partial class KubernetesYamlSerializerContext : StaticContext
 {
 }
