@@ -1,16 +1,15 @@
 ﻿<Project>
 
-  <Target Name="GenerateKubernetesApi">
-
-    <!--
+  <Target Name="BuildGenerator">
     <MSBuild
       Projects="$(KubernetesGeneratorProject)"
       Targets="Build"
       BuildInParallel="$(BuildInParallel)"
       Properties="Configuration=$(Configuration)"
       RemoveProperties="TargetFramework" />
-    -->
+  </Target>
 
+  <Target Name="GenerateKubernetesApi" DependsOnTargets="BuildGenerator">
     <ItemGroup>
       <CurrentOpenApiReference>
         <Command>dotnet run --no-build --framework net8.0 --project $(KubernetesGeneratorProject) --</Command>
