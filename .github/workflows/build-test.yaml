@@ -30,6 +30,8 @@ jobs:
             8.0.x
       - name: Restore
         run: dotnet restore
+      - name: Build Generator
+        run: dotnet build --configuration ${{env.BUILD_CONFIGURATION}} --no-restore ./src/KubernetesSdk.Generator/KubernetesSdk.Generator.csproj
       - name: Build
         run: dotnet build --configuration ${{env.BUILD_CONFIGURATION}} --no-restore
       - name: Test
