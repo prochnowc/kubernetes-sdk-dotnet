@@ -48,7 +48,7 @@ internal sealed class TemplateFunctions
         return operation.ResultType;
     }
 
-    public static string DotnetReturnTypeAsync(ApiOperation operation)
+    public static string DotnetAsyncReturnType(ApiOperation operation)
     {
         string returnType = DotnetReturnType(operation);
         if (returnType == "void")
@@ -85,7 +85,7 @@ internal sealed class TemplateFunctions
         return sb.ToString();
     }
 
-    public static string DotnetFormatParametersAsync(ApiOperation operation)
+    public static string DotnetFormatAsyncParameters(ApiOperation operation)
     {
         StringBuilder sb = new ();
         DotnetFormatParametersCore(sb, operation);

@@ -29,8 +29,8 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
     {{~ for parameter in method.AllParameters ~}}
     {{ parameter.Description | xml_doc "param" $'name="{parameter.Name}"' ~}}
     {{~ end ~}}
-    public async {{ method | dotnet_return_type_async }} {{ method.Name }}Async(
-        {{ method | dotnet_format_parameters_async }})
+    public async {{ method | dotnet_async_return_type }} {{ method.Name }}Async(
+        {{ method | dotnet_format_async_parameters }})
     {
         var requestUri = new RequestUriBuilder("{{ method.Path }}")
         {{~ for parameter in method.AllParameters ~}}
