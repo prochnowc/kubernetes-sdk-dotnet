@@ -1,5 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+#if !NET5_0_OR_GREATER
 
 namespace System.Diagnostics.CodeAnalysis
 {
@@ -10,12 +14,7 @@ namespace System.Diagnostics.CodeAnalysis
     /// bitwise combination of its member values.
     /// </summary>
     [Flags]
-#if SYSTEM_PRIVATE_CORELIB
-    public
-#else
-    internal
-#endif
-    enum DynamicallyAccessedMemberTypes
+    internal enum DynamicallyAccessedMemberTypes
     {
         /// <summary>
         /// Specifies no members.
@@ -95,6 +94,8 @@ namespace System.Diagnostics.CodeAnalysis
         /// <summary>
         /// Specifies all members.
         /// </summary>
-        All = ~None
+        All = ~None,
     }
 }
+
+#endif

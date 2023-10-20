@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using AppCore.Diagnostics;
 using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Kubernetes.Serialization.Yaml;
 

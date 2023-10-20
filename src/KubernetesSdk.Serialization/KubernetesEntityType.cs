@@ -6,7 +6,6 @@
 */
 
 using System;
-using AppCore.Diagnostics;
 using Kubernetes.Models;
 
 namespace Kubernetes.Serialization;

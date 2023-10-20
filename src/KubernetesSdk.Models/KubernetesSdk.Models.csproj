@@ -11,14 +11,9 @@
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.targets" />
 
   <ItemGroup>
-    <PackageReference Include="AppCore.Diagnostics.Sources" Version="0.4.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Fractions" Version="7.2.1" />
     <PackageReference Include="System.Text.Json" Version="8.0.0-rc.1.23419.4" />
     <PackageReference Include="YamlDotNet" Version="13.7.0" />
   </ItemGroup>
-
 
 </Project>

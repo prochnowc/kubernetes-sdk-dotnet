@@ -6,7 +6,6 @@
 */
 
 using System;
-using AppCore.Diagnostics;
 
 namespace Kubernetes.Models
 {

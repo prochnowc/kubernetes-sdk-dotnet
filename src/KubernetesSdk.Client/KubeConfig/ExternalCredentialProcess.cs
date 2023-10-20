@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
-using AppCore.Diagnostics;
 using Kubernetes.Models.KubeConfig;
 using Kubernetes.Serialization;
 

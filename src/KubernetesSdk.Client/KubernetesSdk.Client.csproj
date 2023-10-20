@@ -9,13 +9,6 @@
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.props" />
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.targets" />
 
-  <ItemGroup>
-    <PackageReference Include="AppCore.Diagnostics.Sources" Version="0.4.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)'=='net462' or $(TargetFramework.StartsWith('netstandard'))">
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
   </ItemGroup>

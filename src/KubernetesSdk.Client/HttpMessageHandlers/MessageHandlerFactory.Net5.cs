@@ -1,6 +1,10 @@
-﻿#if NET5_0_OR_GREATER
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+#if NET5_0_OR_GREATER
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 
@@ -8,6 +12,14 @@ namespace Kubernetes.Client.HttpMessageHandlers;
 
 public static partial class MessageHandlerFactory
 {
+    [SuppressMessage(
+        "IDisposableAnalyzers.Correctness",
+        "IDISP001:Dispose created",
+        Justification = "SocketsHttpHandler is disposed by the HttpMessageHandlerWrapper.")]
+    [SuppressMessage(
+        "IDisposableAnalyzers.Correctness",
+        "IDISP011:Don\'t return disposed instance",
+        Justification = "Certificate is disposed by the HttpMessageHandlerWrapper.")]
     public static HttpMessageHandler CreatePrimaryHttpMessageHandler(KubernetesClientOptions options)
     {
         var result = new SocketsHttpHandler

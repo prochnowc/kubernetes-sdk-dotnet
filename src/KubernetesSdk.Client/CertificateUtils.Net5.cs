@@ -21,8 +21,8 @@ internal static partial class CertificateUtils
     public static X509Certificate2Collection LoadPem(string path)
     {
         var certCollection = new X509Certificate2Collection();
-        using FileStream stream = File.OpenRead(path);
-        certCollection.ImportFromPem(new StreamReader(stream).ReadToEnd());
+        using var stream = new StreamReader(File.OpenRead(path));
+        certCollection.ImportFromPem(stream.ReadToEnd());
         return certCollection;
     }
 
@@ -75,12 +75,15 @@ internal static partial class CertificateUtils
             // https://support.microsoft.com/en-us/topic/kb5025823-change-in-how-net-applications-import-x-509-certificates-bf81c936-af2b-446e-9f7a-016f4713b46b
             string? nullPassword = null;
 
-            cert = options.ClientCertificateKeyStoreFlags.HasValue
-                ? new X509Certificate2(
-                    cert.Export(X509ContentType.Pkcs12),
-                    nullPassword,
-                    options.ClientCertificateKeyStoreFlags.Value)
-                : new X509Certificate2(cert.Export(X509ContentType.Pkcs12), nullPassword);
+            using (cert)
+            {
+                return options.ClientCertificateKeyStoreFlags.HasValue
+                    ? new X509Certificate2(
+                        cert.Export(X509ContentType.Pkcs12),
+                        nullPassword,
+                        options.ClientCertificateKeyStoreFlags.Value)
+                    : new X509Certificate2(cert.Export(X509ContentType.Pkcs12), nullPassword);
+            }
         }
 
         return cert;

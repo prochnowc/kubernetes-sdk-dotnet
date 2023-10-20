@@ -103,7 +103,7 @@ public sealed partial class KubernetesResponse : IDisposable
         return stream;
     }
 
-    // TODO: [MemberNotNull(nameof(_response))]
+    [MemberNotNull(nameof(_response))]
     private void EnsureNotDisposed()
     {
         if (_response == null)

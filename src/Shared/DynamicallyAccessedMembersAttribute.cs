@@ -1,5 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+#if !NET5_0_OR_GREATER
 
 namespace System.Diagnostics.CodeAnalysis
 {
@@ -30,12 +34,7 @@ namespace System.Diagnostics.CodeAnalysis
         AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Method |
         AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct,
         Inherited = false)]
-#if SYSTEM_PRIVATE_CORELIB
-    public
-#else
-    internal
-#endif
-    sealed class DynamicallyAccessedMembersAttribute : Attribute
+    internal sealed class DynamicallyAccessedMembersAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicallyAccessedMembersAttribute"/> class
@@ -54,3 +53,5 @@ namespace System.Diagnostics.CodeAnalysis
         public DynamicallyAccessedMemberTypes MemberTypes { get; }
     }
 }
+
+#endif

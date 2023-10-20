@@ -11,10 +11,6 @@
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.targets" />
 
   <ItemGroup>
-    <PackageReference Include="AppCore.Diagnostics.Sources" Version="0.4.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Vecc.YamlDotNet.Analyzers.StaticGenerator" Version="13.7.0" />
   </ItemGroup>
 
