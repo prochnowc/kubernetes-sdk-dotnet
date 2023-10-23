@@ -31,6 +31,10 @@ public class KubernetesClient
         KubernetesClientOptions options,
         IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(httpClientFactory);
+        Ensure.Arg.NotNull(options);
+        Ensure.Arg.NotNull(serializerFactory);
+
         _options = options;
         _serializerFactory = serializerFactory;
         _httpClient = httpClientFactory(options);
@@ -38,6 +42,8 @@ public class KubernetesClient
 
     public virtual async Task<KubernetesResponse> SendAsync(KubernetesRequest request, CancellationToken cancellationToken = default)
     {
+        Ensure.Arg.NotNull(request);
+
         using HttpRequestMessage httpRequest = request.CreateHttpRequest(_options, _serializerFactory);
 
         KubernetesResponse? response = null;
@@ -67,6 +73,8 @@ public class KubernetesClient
     public T GetOperations<T>(Func<KubernetesClient, T> factory)
         where T : KubernetesClientOperations
     {
+        Ensure.Arg.NotNull(factory);
+
         Type type = typeof(T);
 
 #if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER

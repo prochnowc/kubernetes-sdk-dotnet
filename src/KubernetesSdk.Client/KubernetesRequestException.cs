@@ -10,6 +10,9 @@ public class KubernetesRequestException : KubernetesClientException
     public KubernetesRequestException(V1Status status)
         : this(status.Message, null)
     {
+        Ensure.Arg.NotNull(status);
+
+        // TODO: Add ToString() to V1Status
         Status = status;
     }
 

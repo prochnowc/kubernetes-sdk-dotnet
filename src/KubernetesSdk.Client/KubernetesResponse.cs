@@ -17,6 +17,9 @@ public sealed partial class KubernetesResponse : IDisposable
 
     public KubernetesResponse(HttpResponseMessage response, IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(response);
+        Ensure.Arg.NotNull(serializerFactory);
+
         _response = response;
         _serializerFactory = serializerFactory;
     }

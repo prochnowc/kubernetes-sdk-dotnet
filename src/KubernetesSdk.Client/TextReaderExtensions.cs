@@ -1,11 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#if !NET7_0_OR_GREATER
+
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kubernetes.Client;
-
-#if !NET7_0_OR_GREATER
 
 internal static class TextReaderExtensions
 {

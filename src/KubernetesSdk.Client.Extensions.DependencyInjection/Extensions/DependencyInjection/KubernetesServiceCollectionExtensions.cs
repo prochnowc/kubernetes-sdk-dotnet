@@ -25,6 +25,8 @@ public static class KubernetesServiceCollectionExtensions
 
     public static KubernetesSerializerBuilder AddKubernetesSerializer(this IServiceCollection services)
     {
+        Ensure.Arg.NotNull(services);
+
         services.TryAddEnumerable(
             new[]
             {
@@ -55,7 +57,9 @@ public static class KubernetesServiceCollectionExtensions
 
     public static KubernetesClientBuilder AddKubernetesClient(this IServiceCollection services, string name)
     {
-        services.AddKubernetesClientCore();
+        Ensure.Arg.NotNull(services);
+
+        AddKubernetesClientCore(services);
 
         // Configure options using DefaultOptionsProvider only if no explicit configuration
         // is provided via KubernetesClientBuilder.Configure / KubernetesClientBuilder.ConfigureFrom

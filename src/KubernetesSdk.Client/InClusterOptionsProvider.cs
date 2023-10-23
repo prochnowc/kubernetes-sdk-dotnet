@@ -57,6 +57,8 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
 
     public virtual void BindOptions(KubernetesClientOptions options)
     {
+        Ensure.Arg.NotNull(options);
+
         if (!IsInCluster())
         {
             throw new KubernetesConfigException(

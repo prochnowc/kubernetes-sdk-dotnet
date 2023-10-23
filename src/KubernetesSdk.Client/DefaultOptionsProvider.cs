@@ -25,6 +25,9 @@ public class DefaultOptionsProvider : IKubernetesClientOptionsProvider
         IEnumerable<IAuthProviderOptionsBinder> authProviderOptionBinders,
         IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(authProviderOptionBinders);
+        Ensure.Arg.NotNull(serializerFactory);
+
         _authProviderOptionBinders = authProviderOptionBinders;
         _serializerFactory = serializerFactory;
     }
@@ -38,6 +41,8 @@ public class DefaultOptionsProvider : IKubernetesClientOptionsProvider
 
     public virtual void BindOptions(KubernetesClientOptions options)
     {
+        Ensure.Arg.NotNull(options);
+
         if (InClusterOptionsProvider.IsInCluster())
         {
             var clusterOptionsProvider = new InClusterOptionsProvider();

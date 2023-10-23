@@ -20,6 +20,7 @@ public sealed class KubernetesClientBuilder
 
     public KubernetesClientBuilder ConfigureHttpClient(Action<IHttpClientBuilder> configure)
     {
+        Ensure.Arg.NotNull(configure);
         configure(Services.AddHttpClient(KubernetesClientFactory.GetHttpClientName(Name)));
         return this;
     }

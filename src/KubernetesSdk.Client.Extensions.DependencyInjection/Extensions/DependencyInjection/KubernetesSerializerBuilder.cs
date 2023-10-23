@@ -9,7 +9,7 @@ public sealed class KubernetesSerializerBuilder
 {
     public IServiceCollection Services { get; }
 
-    public KubernetesSerializerBuilder(IServiceCollection services)
+    internal KubernetesSerializerBuilder(IServiceCollection services)
     {
         Services = services;
     }

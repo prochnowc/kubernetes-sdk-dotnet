@@ -20,7 +20,7 @@ public static partial class MessageHandlerFactory
         return new NoOpMessageHandler();
     }
 
-    private class HttpMessageHandlerWrapper : DelegatingHandler
+    private sealed class HttpMessageHandlerWrapper : DelegatingHandler
     {
         private readonly Action? _disposeCallback;
 
@@ -41,7 +41,7 @@ public static partial class MessageHandlerFactory
         }
     }
 
-    private class NoOpMessageHandler : DelegatingHandler
+    private sealed class NoOpMessageHandler : DelegatingHandler
     {
     }
 }

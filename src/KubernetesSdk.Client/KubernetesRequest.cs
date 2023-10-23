@@ -17,6 +17,11 @@ public sealed class KubernetesRequest
 
     public KubernetesRequest(HttpMethod method, IReadOnlyCollection<string> consumes, IReadOnlyCollection<string> produces, Uri uri)
     {
+        Ensure.Arg.NotNull(method);
+        Ensure.Arg.NotNull(consumes);
+        Ensure.Arg.NotNull(produces);
+        Ensure.Arg.NotNull(uri);
+
         Method = method;
         Uri = uri;
     }
