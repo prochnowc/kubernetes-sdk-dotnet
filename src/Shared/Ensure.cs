@@ -35,6 +35,6 @@ internal static class Ensure
 
         [DoesNotReturn]
         private static void ThrowArgumentException(string? paramName) =>
-            throw new ArgumentException($"Argument should not be empty", paramName);
+            throw new ArgumentException($"Argument '{paramName}' should not be empty", paramName);
     }
 }

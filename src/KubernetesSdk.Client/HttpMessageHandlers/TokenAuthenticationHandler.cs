@@ -15,12 +15,14 @@ public sealed class TokenAuthenticationHandler : DelegatingHandler
     /// <summary>
     /// Used for statically defined AccessToken via KubernetesClientOptions.
     /// </summary>
-    private class ConstantTokenProvider : ITokenProvider
+    private sealed class ConstantTokenProvider : ITokenProvider
     {
         private readonly string _token;
 
         public ConstantTokenProvider(string token)
         {
+            Ensure.Arg.NotEmpty(token);
+
             _token = token;
         }
 
