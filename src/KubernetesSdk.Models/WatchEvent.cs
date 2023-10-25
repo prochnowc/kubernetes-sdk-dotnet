@@ -6,6 +6,7 @@
 */
 
 using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
 
 namespace Kubernetes.Models;
 
@@ -20,12 +21,14 @@ public class WatchEvent<T>
     /// Gets or sets the type of the event.
     /// </summary>
     [JsonPropertyName("type")]
+    [YamlMember(Alias = "type", ApplyNamingConventions = false)]
     public WatchEventType Type { get; set; }
 
     /// <summary>
     /// Gets or sets the Kubernetes object that raised the event.
     /// </summary>
     [JsonPropertyName("object")]
+    [YamlMember(Alias = "object", ApplyNamingConventions = false)]
     public T? Object { get; set; }
 
     /// <summary>

@@ -5,6 +5,9 @@
  NOTE: This file is derived from https://github.com/kubernetes-client/ licensed under the Apache-2.0 license.
 */
 
+using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
+
 namespace Kubernetes.Models;
 
 /// <summary>
@@ -20,5 +23,7 @@ public interface IStatus<T>
     /// This data may not be up to date. Populated by the system. Read-only. More info:
     /// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status.
     /// </remarks>
+    [JsonPropertyName("status")]
+    [YamlMember(Alias = "status", ApplyNamingConventions = false)]
     T Status { get; set; }
 }
