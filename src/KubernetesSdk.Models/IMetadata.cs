@@ -5,6 +5,9 @@
  NOTE: This file is derived from https://github.com/kubernetes-client/ licensed under the Apache-2.0 license.
 */
 
+using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
+
 namespace Kubernetes.Models;
 
 /// <summary>
@@ -22,5 +25,7 @@ public interface IMetadata<T>
     /// More info:
     /// https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata.
     /// </remarks>
+    [JsonPropertyName("metadata")]
+    [YamlMember(Alias = "metadata", ApplyNamingConventions = false)]
     T Metadata { get; set; }
 }

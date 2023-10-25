@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
 
 namespace Kubernetes.Models;
 
@@ -21,5 +22,6 @@ public interface IKubernetesList<T> : IKubernetesObject<V1ListMeta?>
     /// Gets or sets the list of Kubernetes objects.
     /// </summary>
     [JsonPropertyName("items")]
-    public List<T> Items { get; set; }
+    [YamlMember(Alias = "items", ApplyNamingConventions = false)]
+    List<T> Items { get; set; }
 }

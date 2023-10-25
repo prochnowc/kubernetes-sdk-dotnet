@@ -8,7 +8,7 @@
 using System;
 using Kubernetes.Models;
 
-namespace Kubernetes.Serialization;
+namespace Kubernetes.Client;
 
 public sealed class KubernetesEntityType
 {
@@ -26,7 +26,6 @@ public sealed class KubernetesEntityType
     // TODO: revisit
     public string Singular { get; }
 
-    // TODO: revisit
     public string Plural { get; }
 
     internal KubernetesEntityType(
@@ -54,7 +53,7 @@ public sealed class KubernetesEntityType
     }
 
     public static KubernetesEntityType FromType<T>()
-        where T : class, IKubernetesObject
+        where T : IKubernetesObject
     {
         return FromType(typeof(T));
     }

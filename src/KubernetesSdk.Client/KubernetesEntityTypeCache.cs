@@ -1,11 +1,12 @@
+// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using Kubernetes.Models;
 
-namespace Kubernetes.Serialization;
+namespace Kubernetes.Client;
 
 internal static class KubernetesEntityTypeCache
 {
@@ -19,7 +20,7 @@ internal static class KubernetesEntityTypeCache
             {
                 var entityAttribute = t.GetCustomAttribute<KubernetesEntityAttribute>();
                 if (entityAttribute == null)
-                    throw new ArgumentException("No a kubernetes entity.");
+                    throw new ArgumentException("Not a kubernetes entity.");
 
                 string kind = entityAttribute.Kind;
                 string pluralName = string.IsNullOrWhiteSpace(entityAttribute.PluralName)

@@ -6,6 +6,7 @@
 */
 
 using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
 
 namespace Kubernetes.Models;
 
@@ -30,6 +31,7 @@ public interface IKubernetesObject
     /// https://git.k8s.io/community/contributors/devel/api-conventions.md#resources.
     /// </remarks>
     [JsonPropertyName("apiVersion")]
+    [YamlMember(Alias = "apiVersion", ApplyNamingConventions = false)]
     string? ApiVersion { get; set; }
 
     /// <summary>
@@ -43,6 +45,7 @@ public interface IKubernetesObject
     /// https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds.
     /// </remarks>
     [JsonPropertyName("kind")]
+    [YamlMember(Alias = "kind", ApplyNamingConventions = false)]
     string? Kind { get; set; }
 }
 

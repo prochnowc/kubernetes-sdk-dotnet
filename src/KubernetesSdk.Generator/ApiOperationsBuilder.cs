@@ -39,6 +39,13 @@ internal sealed class ApiOperationsBuilder
         "continue",
     };
 
+    private static readonly HashSet<string> CustomObjectsParameterFilter = new ()
+    {
+        "group",
+        "version",
+        "plural",
+    };
+
     private readonly OpenApiDocument _document;
     private readonly TypeNameResolver _typeNameResolver;
 
@@ -82,6 +89,13 @@ internal sealed class ApiOperationsBuilder
 
                 string resultType = _typeNameResolver.GetResponseTypeName(o.Operation);
 
+                // filter path parameters for custom objects which are set by the KubernetesEntityAttribute
+                if (groupName == "CustomObjects")
+                {
+                    pathParameters = pathParameters.Where(p => !CustomObjectsParameterFilter.Contains(p.Name))
+                                                   .ToArray();
+                }
+
                 if (methodName.StartsWith(ListMethodPrefix))
                 {
                     methods.Add(
@@ -117,6 +131,10 @@ internal sealed class ApiOperationsBuilder
                     if (watchResultType.EndsWith("List"))
                     {
                         watchResultType = watchResultType.Substring(0, resultType.Length - "List".Length);
+                    }
+                    else if (watchResultType.Equals("KubernetesList<T>"))
+                    {
+                        watchResultType = "T";
                     }
 
                     methods.Add(

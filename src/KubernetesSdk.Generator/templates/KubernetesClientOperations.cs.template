@@ -29,12 +29,32 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
     {{~ for parameter in method.AllParameters ~}}
     {{ parameter.Description | xml_doc "param" $'name="{parameter.Name}"' ~}}
     {{~ end ~}}
-    public async {{ method | dotnet_async_return_type }} {{ method.Name }}Async(
+    public async {{ method | dotnet_async_return_type }} {{ method.Name }}Async{{ if Model.Name == "CustomObjects" }}<T>{{ end }}(
         {{ method | dotnet_format_async_parameters }})
+    {{- if Model.Name == "CustomObjects" }}
+        where T : IKubernetesObject
+    {{- end }}
     {
-        var requestUri = new RequestUriBuilder("{{ method.Path }}")
-        {{~ for parameter in method.AllParameters ~}}
+        {{- if Model.Name == "CustomObjects" }}
+        KubernetesEntityType entityType = KubernetesEntityType.FromType<T>();
+        string requestUriTemplate = string.IsNullOrEmpty(entityType.Group)
+            ? "{{ method.Path | string.replace "apis/{group}/" "api/" }}"
+            : "{{ method.Path }}";
+        {{- else }}
+        string requestUriTemplate = "{{ method.Path }}";
+        {{- end }}
+
+        var requestUri = new RequestUriBuilder(requestUriTemplate)
+        {{- if Model.Name == "CustomObjects" }}
+            .AddPathParameter("group", entityType.Group)
+            .AddPathParameter("version", entityType.Version)
+            .AddPathParameter("plural", entityType.Plural)
+        {{- end }}
+        {{~ for parameter in method.PathParameters ~}}
             .AddPathParameter("{{ parameter.Name }}", {{ parameter.ParameterName }})
+        {{~ end ~}}
+        {{~ for parameter in method.QueryParameters ~}}
+            .AddQueryParameter("{{ parameter.Name }}", {{ parameter.ParameterName }})
         {{~ end ~}}
         {{~ if (method.Name | string.starts_with "Watch") ~}}
             .AddQueryParameter("watch", true)
@@ -42,7 +62,7 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
             .ToUri();
 
         var request = new KubernetesRequest(
-            HttpMethods.{{ method.Method}},
+            HttpMethods.{{ method.Method }},
             {{~ if (array.size method.Consumes) > 0 ~}}
             new [] {
                 {{~ for mediaType in method.Consumes ~}}

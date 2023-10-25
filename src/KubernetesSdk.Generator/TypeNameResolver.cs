@@ -71,10 +71,13 @@ internal sealed class TypeNameResolver
 
         if (string.Equals(parameterTypeName, "object", StringComparison.OrdinalIgnoreCase))
         {
-            if (operation.TryGetKubernetesGroupVersionKind(out GroupVersionKind? _)
-                || operation.Tags.Contains("custom_objects"))
+            if (operation.TryGetKubernetesGroupVersionKind(out GroupVersionKind? _))
             {
-                parameterTypeName = "IKubernetesObject";
+                parameterTypeName = "KubernetesObject";
+            }
+            else if (operation.Tags.Contains("custom_objects"))
+            {
+                parameterTypeName = "T";
             }
         }
 
@@ -95,10 +98,16 @@ internal sealed class TypeNameResolver
 
         if (string.Equals(responseTypeName, "object", StringComparison.OrdinalIgnoreCase))
         {
-            if (operation.TryGetKubernetesGroupVersionKind(out GroupVersionKind? _)
-                || operation.Tags.Contains("custom_objects"))
+            if (operation.TryGetKubernetesGroupVersionKind(out GroupVersionKind? _))
             {
-                responseTypeName = "IKubernetesObject";
+                responseTypeName = "KubernetesObject";
+            }
+            else if (operation.Tags.Contains("custom_objects"))
+            {
+                string methodName = operation.OperationId.ToPascalCase();
+                responseTypeName = methodName.StartsWith("List")
+                    ? "KubernetesList<T>"
+                    : "T";
             }
         }
 
