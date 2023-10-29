@@ -1,5 +1,8 @@
 ﻿namespace Kubernetes.Generator;
 
+/// <summary>
+/// Holds the 'x-kubernetes-group-version-kind' schema extensions data.
+/// </summary>
 internal sealed class GroupVersionKind
 {
     public string Group { get; }

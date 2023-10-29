@@ -35,11 +35,11 @@ public static class Program
                     break;
 
                 default:
-                    throw new InvalidOperationException($"Unknown code generator {generatorName}");
+                    throw new ApplicationException($"Unknown code generator {generatorName}");
             }
         }
 
-        OpenApiDocument? openApiDocument =
+        OpenApiDocument openApiDocument =
             await OpenApiDocument.FromFileAsync(swaggerJsonPath)
                                  .ConfigureAwait(false);
 

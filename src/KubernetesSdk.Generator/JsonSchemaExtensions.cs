@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using NJsonSchema;
@@ -7,26 +6,24 @@ namespace Kubernetes.Generator;
 
 internal static class JsonSchemaExtensions
 {
+    private const string ExtensionDataKey = "x-kubernetes-group-version-kind";
+    private const string GroupKey = "group";
+    private const string VersionKey = "version";
+    private const string KindKey = "kind";
+
     public static bool HasKubernetesGroupVersionKind(this IJsonExtensionObject schema)
     {
-        if (schema == null)
-        {
-            throw new ArgumentNullException(nameof(schema));
-        }
-
-        return schema.ExtensionData?.ContainsKey("x-kubernetes-group-version-kind") == true;
+        Ensure.Arg.NotNull(schema);
+        return schema.ExtensionData?.ContainsKey(ExtensionDataKey) == true;
     }
 
     public static bool TryGetKubernetesGroupVersionKind(
         this IJsonExtensionObject schema,
         [NotNullWhen(true)] out GroupVersionKind? groupVersionKind)
     {
-        if (schema == null)
-        {
-            throw new ArgumentNullException(nameof(schema));
-        }
+        Ensure.Arg.NotNull(schema);
 
-        if (schema.ExtensionData?.TryGetValue("x-kubernetes-group-version-kind", out object? value) != true)
+        if (schema.ExtensionData?.TryGetValue(ExtensionDataKey, out object? value) != true)
         {
             groupVersionKind = null;
             return false;
@@ -35,9 +32,9 @@ internal static class JsonSchemaExtensions
         var extensionDataDictionary = value as IDictionary<string, object>;
         extensionDataDictionary ??= (IDictionary<string, object>)((object[])value!)[0];
         groupVersionKind = new GroupVersionKind(
-            (string)extensionDataDictionary["group"],
-            (string)extensionDataDictionary["version"],
-            (string)extensionDataDictionary["kind"]);
+            (string)extensionDataDictionary[GroupKey],
+            (string)extensionDataDictionary[VersionKey],
+            (string)extensionDataDictionary[KindKey]);
 
         return true;
     }

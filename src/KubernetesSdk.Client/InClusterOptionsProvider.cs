@@ -62,7 +62,7 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
         if (!IsInCluster())
         {
             throw new KubernetesConfigException(
-                $"Unable to load in-cluster configuration. Missing environment variables {ServiceHostEnvironmentVariableName} and {ServicePortEnvironmentVariableName} or service account token. Hint: consider using option \"automountServiceAccountToken: true\" in deployment declaration.");
+                $"Unable to load in-cluster configuration. Missing environment variables '{ServiceHostEnvironmentVariableName}' and '{ServicePortEnvironmentVariableName}' or service account token. Hint: consider using option 'automountServiceAccountToken: true' in deployment declaration.");
         }
 
         string rootCaPath = Path.Combine(ServiceAccountPath, ServiceAccountRootCaFileName);
@@ -71,7 +71,7 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
         string host = Environment.GetEnvironmentVariable(ServiceHostEnvironmentVariableName) !;
         string port = Environment.GetEnvironmentVariable(ServicePortEnvironmentVariableName) !;
 
-        options.Host = new UriBuilder("https", host, Convert.ToInt32(port)).ToString();
+        options.Host = new UriBuilder(Uri.UriSchemeHttps, host, Convert.ToInt32(port)).ToString();
         options.TokenProvider = new ServiceAccountTokenProvider(tokenPath);
         options.SslCaCerts = CertificateUtils.LoadPem(rootCaPath);
 

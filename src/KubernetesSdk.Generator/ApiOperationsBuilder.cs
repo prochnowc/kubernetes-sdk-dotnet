@@ -46,19 +46,17 @@ internal sealed class ApiOperationsBuilder
         "plural",
     };
 
-    private readonly OpenApiDocument _document;
-    private readonly TypeNameResolver _typeNameResolver;
+    private readonly GeneratorExecutionContext _context;
 
-    public ApiOperationsBuilder(OpenApiDocument document)
+    public ApiOperationsBuilder(GeneratorExecutionContext context)
     {
-        _document = document;
-        _typeNameResolver = new TypeNameResolver(document);
+        _context = context;
     }
 
     public IEnumerable<ApiOperations> GetOperations()
     {
         Dictionary<string, List<OpenApiOperationDescription>>? operationsGroupedByTag =
-            GetOperationsGroupedByTag(_document.Operations);
+            GetOperationsGroupedByTag(_context.OpenApiDocument.Operations);
 
         foreach (KeyValuePair<string, List<OpenApiOperationDescription>> operationsGroup in operationsGroupedByTag)
         {
@@ -82,12 +80,12 @@ internal sealed class ApiOperationsBuilder
                     ? new ApiOperationParameter(
                         body.Name,
                         NameTransformer.GetParameterName(body.Name),
-                        _typeNameResolver.GetParameterTypeName(o.Operation, body),
+                        _context.TypeNameResolver.GetParameterTypeName(o.Operation, body),
                         body.IsRequired,
                         body.Description)
                     : null;
 
-                string resultType = _typeNameResolver.GetResponseTypeName(o.Operation);
+                string resultType = _context.TypeNameResolver.GetResponseTypeName(o.Operation);
 
                 // filter path parameters for custom objects which are set by the KubernetesEntityAttribute
                 if (groupName == "CustomObjects")
@@ -247,7 +245,7 @@ internal sealed class ApiOperationsBuilder
                              p => new ApiOperationParameter(
                                  p.Parameter.Name,
                                  NameTransformer.GetParameterName(p.Name),
-                                 _typeNameResolver.GetParameterTypeName((OpenApiOperation)p.Parameter.Parent, p.Parameter),
+                                 _context.TypeNameResolver.GetParameterTypeName((OpenApiOperation)p.Parameter.Parent, p.Parameter),
                                  p.Parameter.IsRequired,
                                  p.Parameter.Description))
                          .ToArray();

@@ -24,3 +24,11 @@ foreach (V1Namespace ns in namespaces.Items)
 {
     Console.WriteLine(ns.Metadata?.Name);
 }
+
+KubernetesList<V1Namespace> list = await client.CustomObjects()
+                                               .ListClusterCustomObjectAsync<V1Namespace>();
+
+foreach (V1Namespace ns in list.Items)
+{
+    Console.WriteLine(ns.Metadata?.Name);
+}

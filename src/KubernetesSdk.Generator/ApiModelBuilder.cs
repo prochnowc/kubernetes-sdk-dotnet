@@ -9,23 +9,21 @@ namespace Kubernetes.Generator;
 
 internal sealed class ApiModelBuilder
 {
+    private readonly GeneratorExecutionContext _context;
+
     private static readonly HashSet<string> ModelFilter = new (StringComparer.OrdinalIgnoreCase)
     {
         "v1.WatchEvent",
     };
 
-    private readonly OpenApiDocument _document;
-    private readonly TypeNameResolver _typeNameResolver;
-
-    public ApiModelBuilder(OpenApiDocument document)
+    public ApiModelBuilder(GeneratorExecutionContext context)
     {
-        _document = document;
-        _typeNameResolver = new TypeNameResolver(document);
+        _context = context;
     }
 
     public IEnumerable<ApiModel> GetModels()
     {
-        foreach (KeyValuePair<string, JsonSchema> kv in _document.Definitions)
+        foreach (KeyValuePair<string, JsonSchema> kv in _context.OpenApiDocument.Definitions)
         {
             string name = kv.Key;
             JsonSchema schema = kv.Value;
@@ -38,7 +36,7 @@ internal sealed class ApiModelBuilder
             var model = new ApiModel(
                 name,
                 groupVersionKind,
-                _typeNameResolver.GetTypeName(schema),
+                _context.TypeNameResolver.GetTypeName(schema),
                 GetModelInterfaces(schema),
                 GetModelProperties(schema),
                 schema.Description);
@@ -69,7 +67,7 @@ internal sealed class ApiModelBuilder
                 }
                 else
                 {*/
-                interfaces.Add($"IKubernetesList<{_typeNameResolver.GetTypeName(itemSchema)}>");
+                interfaces.Add($"IKubernetesList<{_context.TypeNameResolver.GetTypeName(itemSchema)}>");
                 /* } */
             }
             else if (schema.Properties.TryGetValue("metadata", out JsonSchemaProperty? metadataProperty))
@@ -79,7 +77,7 @@ internal sealed class ApiModelBuilder
                     : "?";
 
                 interfaces.Add(
-                    $"IKubernetesObject<{_typeNameResolver.GetTypeName(metadataProperty.Reference)}{nullable}>");
+                    $"IKubernetesObject<{_context.TypeNameResolver.GetTypeName(metadataProperty.Reference)}{nullable}>");
             }
             else
             {
@@ -94,7 +92,7 @@ internal sealed class ApiModelBuilder
                         ? string.Empty
                         : "?";
 
-                    interfaces.Add($"ISpec<{_typeNameResolver.GetTypeName(specProperty.Reference)}{nullable}>");
+                    interfaces.Add($"ISpec<{_context.TypeNameResolver.GetTypeName(specProperty.Reference)}{nullable}>");
                 }
             }
 
@@ -106,7 +104,7 @@ internal sealed class ApiModelBuilder
                         ? string.Empty
                         : "?";
 
-                    interfaces.Add($"IStatus<{_typeNameResolver.GetTypeName(statusProperty.Reference)}{nullable}>");
+                    interfaces.Add($"IStatus<{_context.TypeNameResolver.GetTypeName(statusProperty.Reference)}{nullable}>");
                 }
             }
         }
@@ -122,7 +120,7 @@ internal sealed class ApiModelBuilder
                          p =>
                              new ApiModelProperty(
                                  p.Name,
-                                 _typeNameResolver.GetTypeName(p),
+                                 _context.TypeNameResolver.GetTypeName(p),
                                  NameTransformer.GetPropertyName(p.Name.ToPascalCase()),
                                  NameTransformer.GetParameterName(p.Name.ToCamelCase()),
                                  p.IsRequired,

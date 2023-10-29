@@ -10,11 +10,14 @@ internal sealed class GeneratorExecutionContext
 {
     public OpenApiDocument OpenApiDocument { get; }
 
+    public TypeNameResolver TypeNameResolver { get; }
+
     public string OutputPath { get; }
 
     public GeneratorExecutionContext(OpenApiDocument openApiDocument, string outputPath)
     {
         OpenApiDocument = openApiDocument;
+        TypeNameResolver = new TypeNameResolver(openApiDocument);
         OutputPath = outputPath;
     }
 
@@ -25,18 +28,6 @@ internal sealed class GeneratorExecutionContext
 
         string filePath = Path.Combine(OutputPath, fileName);
 
-#if NETSTANDARD2_0
-        string? existingContent = null;
-        if (File.Exists(filePath))
-        {
-            existingContent = File.ReadAllText(filePath, Encoding.UTF8);
-        }
-
-        if (!string.Equals(existingContent, content))
-        {
-            File.WriteAllText(filePath, content, Encoding.UTF8);
-        }
-#else
         string? existingContent = null;
         if (File.Exists(filePath))
         {
@@ -47,6 +38,5 @@ internal sealed class GeneratorExecutionContext
         {
             await File.WriteAllTextAsync(filePath, content, Encoding.UTF8, cancellationToken);
         }
-#endif
     }
 }

@@ -26,13 +26,23 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
 
     public {{ Model.Type }}()
     {
+        {{- for property in Model.Properties }}
+        {{- if property.IsRequired }}
+        {{ property.PropertyName }} =
+        {{- if property.Type == "string" }} string.Empty
+        {{- else if property.Type == "byte[]" }} new byte[0]
+        {{- else }} new ()
+        {{- end }};
+        {{- end }}
+        {{- end }}
+
         Init();
     }
 
     {{~ if (Model.Properties | array.size) > 0 ~}}
     public {{ Model.Type }}(
         {{~ for property in Model.Properties ~}}
-        {{ property.Type }} {{ property.ParameterName }}{{ if !property.IsRequired }} = null{{ end }}{{ if !for.last }},{{ end }}
+        {{ property.Type }} {{ property.ParameterName }}{{ if !property.IsRequired }} = default{{ end }}{{ if !for.last }},{{ end }}
         {{~ end ~}}
         )
     {
@@ -48,11 +58,11 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     {
         {{~ if Model.GroupVersionKind ~}}
         {{~ if (Model.GroupVersionKind.Group | string.empty) ~}}
-        ApiVersion = "{{ Model.GroupVersionKind.Version }}";
+        ApiVersion ??= "{{ Model.GroupVersionKind.Version }}";
         {{~ else ~}}
-        ApiVersion = "{{ Model.GroupVersionKind.Group }}/{{ Model.GroupVersionKind.Version }}";
+        ApiVersion ??= "{{ Model.GroupVersionKind.Group }}/{{ Model.GroupVersionKind.Version }}";
         {{~ end ~}}
-        Kind = "{{ Model.GroupVersionKind.Kind }}";
+        Kind ??= "{{ Model.GroupVersionKind.Kind }}";
         {{~ end ~}}
     }
 }
