@@ -68,10 +68,10 @@ public sealed class KubernetesRequest
             : HttpVersion.Version20;
 #endif
 
-        if (!string.IsNullOrWhiteSpace(options.UserAgent))
-        {
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(options.UserAgent));
-        }
+        request.Headers.UserAgent.Add(
+            !string.IsNullOrWhiteSpace(options.UserAgent)
+                ? ProductInfoHeaderValue.Parse(options.UserAgent)
+                : DefaultUserAgent.Value);
 
         if (!string.IsNullOrWhiteSpace(options.TlsServerName))
         {
