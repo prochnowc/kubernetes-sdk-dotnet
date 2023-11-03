@@ -150,7 +150,7 @@ public sealed class ExternalCredentialProcess
             using CancellationTokenRegistration ctr = cts.Token.Register(
                 p =>
                 {
-                    ((Process)p).Kill();
+                    ((Process)p!).Kill();
 
                     if (cancellationToken.IsCancellationRequested)
                     {

@@ -24,6 +24,9 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     public {{ property.Type }} {{ property.PropertyName }} { get; set; }
     {{~ end ~}}
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="{{ Model.Type }}" /> class.
+    /// </summary>
     public {{ Model.Type }}()
     {
         {{- for property in Model.Properties }}
@@ -40,6 +43,13 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     }
 
     {{~ if (Model.Properties | array.size) > 0 ~}}
+    /// <summary>
+    /// Initializes a new instance of the <see cref="{{ Model.Type }}" /> class.
+    /// </summary>
+    {{~ for property in Model.Properties ~}}
+    {{~ xmlDocParameterName = property.ParameterName | string.remove_first "@" ~}}
+    {{~ property.Description | xml_doc "param" $'name="{xmlDocParameterName}"' ~}}
+    {{~ end ~}}
     public {{ Model.Type }}(
         {{~ for property in Model.Properties ~}}
         {{ property.Type }} {{ property.ParameterName }}{{ if !property.IsRequired }} = default{{ end }}{{ if !for.last }},{{ end }}

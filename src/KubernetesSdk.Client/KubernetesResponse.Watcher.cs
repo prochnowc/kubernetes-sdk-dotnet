@@ -13,6 +13,9 @@ using Kubernetes.Serialization;
 
 namespace Kubernetes.Client;
 
+/// <content>
+/// Contains watcher related methods for the <see cref="KubernetesResponse"/> class.
+/// </content>
 public partial class KubernetesResponse
 {
     private sealed class Watcher<T> : IWatcher<T>

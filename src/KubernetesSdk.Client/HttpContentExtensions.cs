@@ -1,11 +1,11 @@
-﻿using System.IO;
+﻿#if !NET5_0_OR_GREATER
+
+using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Kubernetes.Client;
-
-#if !NET5_0_OR_GREATER
 
 internal static class HttpContentExtensions
 {

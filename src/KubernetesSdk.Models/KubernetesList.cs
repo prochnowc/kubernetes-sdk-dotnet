@@ -34,11 +34,21 @@ public sealed class KubernetesList<T> : IKubernetesList<T>
     [YamlMember(Alias = "items", ApplyNamingConventions = false)]
     public List<T> Items { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubernetesList{T}"/> class.
+    /// </summary>
     public KubernetesList()
     {
         Items = new List<T>();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubernetesList{T}"/> class.
+    /// </summary>
+    /// <param name="items">The items in the list.</param>
+    /// <param name="apiVersion">The API version of the list.</param>
+    /// <param name="kind">The kind of the list.</param>
+    /// <param name="metadata">The <see cref="V1ListMeta"/>.</param>
     public KubernetesList(
         List<T> items,
         string? apiVersion = default,

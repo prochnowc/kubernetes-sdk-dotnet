@@ -25,10 +25,11 @@ foreach (V1Namespace ns in namespaces.Items)
     Console.WriteLine(ns.Metadata?.Name);
 }
 
-KubernetesList<V1Namespace> list = await client.CustomObjects()
-                                               .ListClusterCustomObjectAsync<V1Namespace>();
+IWatcher<V1Namespace> list = await client.CoreV1()
+                                         .WatchNamespaceAsync();
 
-foreach (V1Namespace ns in list.Items)
+WatchEvent<V1Namespace>? @event;
+while ((@event = await list.ReadNextAsync()) != null)
 {
-    Console.WriteLine(ns.Metadata?.Name);
+    Console.WriteLine(@event.Type);
 }

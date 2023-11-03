@@ -8,8 +8,6 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <DefineConstants>$(DefineConstants);ENABLE_NULLABLE</DefineConstants>
-    <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
 
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -21,8 +19,16 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
-  <!-- Code Analysis -->
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 
+  <!-- Disable nullable reference type warning for non-annotated frameworks -->
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0' or '$(TargetFramework)'=='net462'">
+    <NoWarn>$(NoWarn);CS8600;CS8602</NoWarn>
+  </PropertyGroup>
+
+  <!-- Code Analysis -->
   <PropertyGroup>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)KubernetesSdk.ruleset</CodeAnalysisRuleSet>

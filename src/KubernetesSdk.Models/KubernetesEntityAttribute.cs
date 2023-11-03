@@ -21,7 +21,7 @@ namespace Kubernetes.Models
         public string Group { get; }
 
         /// <summary>
-        /// Gets the API Version this Kubernetes type belongs to.
+        /// Gets the API Version of the Kubernetes type.
         /// </summary>
         public string Version { get; }
 
@@ -35,6 +35,12 @@ namespace Kubernetes.Models
         /// </summary>
         public string? PluralName { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KubernetesEntityAttribute"/> class.
+        /// </summary>
+        /// <param name="group">The group this Kubernetes type belongs to.</param>
+        /// <param name="version">The API version of the Kubernetes type.</param>
+        /// <param name="kind">The Kubernetes named schema this object is based on.</param>
         public KubernetesEntityAttribute(string group, string version, string kind)
         {
             Ensure.Arg.NotNull(group);

@@ -23,7 +23,7 @@ public sealed partial class KubernetesResponse : IDisposable
     private HttpResponseMessage? _response;
     private int _disposed;
 
-    internal KubernetesResponse(HttpResponseMessage response, IKubernetesSerializerFactory serializerFactory)
+    public KubernetesResponse(HttpResponseMessage response, IKubernetesSerializerFactory serializerFactory)
     {
         Ensure.Arg.NotNull(response);
         Ensure.Arg.NotNull(serializerFactory);
@@ -73,7 +73,6 @@ public sealed partial class KubernetesResponse : IDisposable
     /// <returns>The response content.</returns>
     /// <exception cref="KubernetesRequestException">The response content could not be deserialized.</exception>
     public async Task<T> ReadAsContentAsync<T>(CancellationToken cancellationToken = default)
-        where T : IKubernetesObject
     {
         EnsureNotDisposed();
 

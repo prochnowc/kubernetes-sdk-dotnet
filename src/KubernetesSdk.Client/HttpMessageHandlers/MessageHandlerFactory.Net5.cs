@@ -37,9 +37,9 @@ public static partial class MessageHandlerFactory
         }
         else
         {
-            if (options.SslCaCerts != null)
+            if (options.CaCerts != null)
             {
-                var validator = new RemoteCertificateValidator(options.SslCaCerts);
+                var validator = new RemoteCertificateValidator(options.CaCerts);
                 result.SslOptions.RemoteCertificateValidationCallback = validator.CertificateValidationCallback;
             }
         }

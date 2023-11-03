@@ -6,7 +6,7 @@ using Scriban.Runtime;
 
 namespace Kubernetes.Generator;
 
-public class TemplateRenderer
+internal class TemplateRenderer
 {
     private static readonly string ResourceBaseName = $"Kubernetes.Generator.templates.";
     private readonly string _templatePath;

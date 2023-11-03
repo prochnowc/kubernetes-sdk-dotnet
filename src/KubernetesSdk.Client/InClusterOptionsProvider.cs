@@ -73,7 +73,7 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
 
         options.Host = new UriBuilder(Uri.UriSchemeHttps, host, Convert.ToInt32(port)).ToString();
         options.TokenProvider = new ServiceAccountTokenProvider(tokenPath);
-        options.SslCaCerts = CertificateUtils.LoadPem(rootCaPath);
+        options.CaCerts = CertificateUtils.LoadPem(rootCaPath);
 
         string namespaceFile = Path.Combine(ServiceAccountPath, ServiceAccountNamespaceFileName);
         if (File.Exists(namespaceFile))

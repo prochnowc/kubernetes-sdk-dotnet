@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Net.Http;
@@ -9,6 +12,9 @@ using Kubernetes.Serialization;
 
 namespace Kubernetes.Client;
 
+/// <summary>
+/// Represents the Kubernetes API client.
+/// </summary>
 public class KubernetesClient
 {
     private readonly KubernetesClientOptions _options;
@@ -70,7 +76,7 @@ public class KubernetesClient
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public T GetOperations<T>(Func<KubernetesClient, T> factory)
+    internal T GetOperations<T>(Func<KubernetesClient, T> factory)
         where T : KubernetesClientOperations
     {
         Ensure.Arg.NotNull(factory);

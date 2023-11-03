@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Kubernetes.Client;
 
+/// <content>
+/// Contains stream related methods for the <see cref="KubernetesResponse"/> class.
+/// </content>
 public partial class KubernetesResponse
 {
     /// <summary>

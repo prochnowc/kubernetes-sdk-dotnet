@@ -14,7 +14,11 @@ namespace Kubernetes.Models;
 
 public partial class ResourceQuantity
 {
-    public static readonly decimal MaxAllowed = (decimal)BigInteger.Pow(2, 63) - 1;
+    /// <summary>
+    /// Gets the maximum value.
+    /// </summary>
+    public static readonly decimal MaxValue = (decimal)BigInteger.Pow(2, 63) - 1;
+
     internal static readonly char[] SuffixChars = "eEinumkKMGTP".ToCharArray();
 
     private ResourceQuantityValue? _value;

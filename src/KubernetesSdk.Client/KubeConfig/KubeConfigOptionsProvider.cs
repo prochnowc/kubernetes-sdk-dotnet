@@ -154,7 +154,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
                 string? nullPassword = null;
                 string data = cluster.ClusterEndpoint.CertificateAuthorityData!;
                 var certificate = new X509Certificate2(Convert.FromBase64String(data), nullPassword);
-                options.SslCaCerts = new X509Certificate2Collection(certificate);
+                options.CaCerts = new X509Certificate2Collection(certificate);
             }
             else if (!string.IsNullOrEmpty(cluster.ClusterEndpoint.CertificateAuthority))
             {
@@ -162,7 +162,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
                     GetFullPath(
                         configPath,
                         cluster.ClusterEndpoint.CertificateAuthority!));
-                options.SslCaCerts = new X509Certificate2Collection(certificate);
+                options.CaCerts = new X509Certificate2Collection(certificate);
             }
         }
     }

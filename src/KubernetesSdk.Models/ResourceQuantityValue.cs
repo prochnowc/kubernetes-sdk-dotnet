@@ -48,9 +48,9 @@ internal sealed class ResourceQuantityValue
         rationalValue = literal.Multiply(Fraction.Pow(suffixer.Base, suffixer.Exponent));
         format = suffixer.Format;
 
-        if (format == ResourceQuantityFormat.BinarySI && rationalValue > Fraction.FromDecimal(ResourceQuantity.MaxAllowed))
+        if (format == ResourceQuantityFormat.BinarySI && rationalValue > Fraction.FromDecimal(ResourceQuantity.MaxValue))
         {
-            rationalValue = Fraction.FromDecimal(ResourceQuantity.MaxAllowed);
+            rationalValue = Fraction.FromDecimal(ResourceQuantity.MaxValue);
         }
 
         return new ResourceQuantityValue(value, format, rationalValue);

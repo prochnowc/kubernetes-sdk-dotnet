@@ -5,7 +5,7 @@ using YamlDotNet.Serialization;
 namespace Kubernetes.Models.KubeConfig;
 
 /// <summary>
-/// Contains information about how to communicate with a kubernetes cluster
+/// Contains information about how to communicate with a Kubernetes cluster.
 /// </summary>
 public class ClusterEndpoint
 {
@@ -14,7 +14,6 @@ public class ClusterEndpoint
     /// </summary>
     [JsonPropertyName("certificate-authority")]
     [YamlMember(Alias = "certificate-authority", ApplyNamingConventions = false)]
-
     public string? CertificateAuthority { get; set; }
 
     /// <summary>
