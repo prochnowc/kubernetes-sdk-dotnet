@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Kubernetes.Serialization;
 
@@ -7,6 +8,11 @@ namespace Kubernetes.Serialization;
 /// </summary>
 public interface IKubernetesSerializerFactory
 {
+    /// <summary>
+    /// Gets a collection of supported content types.
+    /// </summary>
+    IReadOnlyCollection<string> ContentTypes { get; }
+
     /// <summary>
     /// Creates the serializer for the specified content type.
     /// </summary>

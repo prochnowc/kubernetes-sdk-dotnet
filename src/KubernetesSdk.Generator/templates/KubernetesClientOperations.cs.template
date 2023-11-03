@@ -61,29 +61,8 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
         {{~ end ~}}
             .ToUri();
 
-        var request = new KubernetesRequest(
-            HttpMethods.{{ method.Method }},
-            {{~ if (array.size method.Consumes) > 0 ~}}
-            new [] {
-                {{~ for mediaType in method.Consumes ~}}
-                "{{ mediaType }}"{{ if !for.last }},{{ end }}
-                {{~ end ~}}
-            },
-            {{~ else ~}}
-            new string[0],
-            {{~ end ~}}
-            {{~ if (array.size method.Produces) > 0 ~}}
-            new [] {
-                {{~ for mediaType in method.Produces ~}}
-                "{{ mediaType }}"{{ if !for.last }},{{ end }}
-                {{~ end ~}}
-            },
-            {{~ else ~}}
-            new string[0],
-            {{~ end ~}}
-            requestUri);
+        var request = new KubernetesRequest(HttpMethods.{{ method.Method }}, requestUri);
         {{~ if method.Body != null ~}}
-
         request.Content = {{ method.Body.ParameterName }};
         {{~ end ~}}
 
@@ -93,7 +72,7 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
         {{ if (method.Name | string.starts_with "Watch") -}}
         return await response.ReadAsWatcherAsync<{{ method.ResultType }}>(cancellationToken)
             .ConfigureAwait(false);
-        {{- else if method.ResultType == "Stream" -}}
+        {{- else if method.ResultType == "global::System.IO.Stream" -}}
         return await response.ReadAsStreamAsync(cancellationToken)
             .ConfigureAwait(false);
         {{- else if method.ResultType != "void" -}}

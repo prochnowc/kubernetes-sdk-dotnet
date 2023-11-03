@@ -20,11 +20,15 @@ public sealed class KubernetesSerializerFactory : IKubernetesSerializerFactory
             }));
 
     private readonly IEnumerable<IKubernetesSerializerProvider> _providers;
+    private readonly string[] _contentTypes;
 
     /// <summary>
     /// Gets the default instance of the <see cref="KubernetesSerializerFactory"/> class.
     /// </summary>
     public static KubernetesSerializerFactory Instance => LazyInstance.Value;
+
+    /// <inheritdoc/>
+    public IReadOnlyCollection<string> ContentTypes => _contentTypes;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KubernetesSerializerFactory"/> class.
@@ -34,6 +38,8 @@ public sealed class KubernetesSerializerFactory : IKubernetesSerializerFactory
     {
         Ensure.Arg.NotNull(providers);
         _providers = providers;
+        _contentTypes = _providers.Select(p => p.ContentType)
+                                  .ToArray();
     }
 
     /// <inheritdoc />

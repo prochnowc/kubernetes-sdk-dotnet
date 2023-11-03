@@ -1,5 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -7,19 +9,36 @@ using Kubernetes.Serialization;
 
 namespace Kubernetes.Client;
 
+/// <summary>
+/// Represents a Kubernetes API request.
+/// </summary>
 public sealed class KubernetesRequest
 {
+    private const string ContentType = "application/json";
+
+    /// <summary>
+    /// Gets the HTTP method of the request.
+    /// </summary>
     public HttpMethod Method { get; }
 
+    /// <summary>
+    /// Gets the URI of the API endpoint.
+    /// </summary>
     public Uri Uri { get; }
 
+    /// <summary>
+    /// Gets or sets the body of the request.
+    /// </summary>
     public object? Content { get; set; }
 
-    public KubernetesRequest(HttpMethod method, IReadOnlyCollection<string> consumes, IReadOnlyCollection<string> produces, Uri uri)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubernetesRequest"/> class.
+    /// </summary>
+    /// <param name="method">The HTTP method to use for the request.</param>
+    /// <param name="uri">The URI of the API endpoint.</param>
+    public KubernetesRequest(HttpMethod method, Uri uri)
     {
         Ensure.Arg.NotNull(method);
-        Ensure.Arg.NotNull(consumes);
-        Ensure.Arg.NotNull(produces);
         Ensure.Arg.NotNull(uri);
 
         Method = method;
@@ -33,8 +52,7 @@ public sealed class KubernetesRequest
         HttpContent? content = null;
         if (Content != null)
         {
-            string contentType = "application/json";
-            IKubernetesSerializer serializer = serializerFactory.CreateSerializer(contentType);
+            IKubernetesSerializer serializer = serializerFactory.CreateSerializer(ContentType);
             content = new StringContent(serializer.Serialize(Content));
         }
 

@@ -1,3 +1,6 @@
+// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -31,12 +34,9 @@ public partial class KubernetesResponse
 
         public static async Task<Watcher<T>> CreateAsync(
             HttpResponseMessage response,
-            IKubernetesSerializerFactory serializerFactory,
+            IKubernetesSerializer serializer,
             CancellationToken cancellationToken)
         {
-            // TODO: validate content type
-            IKubernetesSerializer serializer = serializerFactory.CreateSerializer("application/json");
-
             Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
                                           .ConfigureAwait(false);
 
