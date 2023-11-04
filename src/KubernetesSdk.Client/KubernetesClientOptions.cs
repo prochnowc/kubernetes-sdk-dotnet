@@ -5,7 +5,7 @@ using Kubernetes.Client.Authentication;
 namespace Kubernetes.Client
 {
     /// <summary>
-    ///     Represents a set of kubernetes client configuration settings
+    /// Represents a set of kubernetes client configuration settings.
     /// </summary>
     public class KubernetesClientOptions
     {

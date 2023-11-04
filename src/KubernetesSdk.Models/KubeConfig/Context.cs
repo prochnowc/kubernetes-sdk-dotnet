@@ -31,6 +31,9 @@ public class Context
     [YamlMember(Alias = "extensions", ApplyNamingConventions = false)]
     public List<NamedExtension> Extensions { get; set; } = new ();
 
+    /// <summary>
+    /// Gets or sets the namespace.
+    /// </summary>
     [Obsolete("This property is not set by the YAML config. Use ContextDetails.Namespace instead.")]
     [JsonPropertyName("namespace")]
     [YamlMember(Alias = "namespace", ApplyNamingConventions = false)]

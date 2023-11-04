@@ -29,6 +29,7 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
     {{~ for parameter in method.AllParameters ~}}
     {{ parameter.Description | xml_doc "param" $'name="{parameter.Name}"' ~}}
     {{~ end ~}}
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken" /> which can be used to cancel the request.</param>
     public async {{ method | dotnet_async_return_type }} {{ method.Name }}Async{{ if Model.Name == "CustomObjects" }}<T>{{ end }}(
         {{ method | dotnet_format_async_parameters }})
     {{- if Model.Name == "CustomObjects" }}

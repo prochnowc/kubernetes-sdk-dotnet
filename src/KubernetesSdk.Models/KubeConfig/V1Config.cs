@@ -22,10 +22,12 @@ public class V1Config : IKubernetesObject
     [YamlMember(Alias = "preferences", ApplyNamingConventions = false)]
     public Dictionary<string, object> Preferences { get; set; } = new ();
 
+    /// <inheritdoc />
     [JsonPropertyName("apiVersion")]
     [YamlMember(Alias = "apiVersion", ApplyNamingConventions = false)]
     public string? ApiVersion { get; set; }
 
+    /// <inheritdoc />
     [JsonPropertyName("kind")]
     [YamlMember(Alias = "kind", ApplyNamingConventions = false)]
     public string? Kind { get; set; }
@@ -65,6 +67,9 @@ public class V1Config : IKubernetesObject
     [YamlMember(Alias = "extensions", ApplyNamingConventions = false)]
     public List<NamedExtension> Extensions { get; set; } = new ();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="V1Config"/> class.
+    /// </summary>
     public V1Config()
     {
         Init();

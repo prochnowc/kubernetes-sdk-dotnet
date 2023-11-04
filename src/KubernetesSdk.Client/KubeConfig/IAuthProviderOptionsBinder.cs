@@ -5,7 +5,7 @@ namespace Kubernetes.Client.KubeConfig;
 public interface IAuthProviderOptionsBinder
 {
     /// <summary>
-    /// Get the name of the authentication provider.
+    /// Gets the name of the authentication provider.
     /// </summary>
     string ProviderName { get; }
 

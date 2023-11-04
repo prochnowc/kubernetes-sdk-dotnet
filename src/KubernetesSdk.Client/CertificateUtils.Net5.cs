@@ -27,10 +27,10 @@ internal static partial class CertificateUtils
     }
 
     /// <summary>
-    /// Generates pfx from client configuration
+    /// Generates pfx from client configuration.
     /// </summary>
-    /// <param name="options">Kubernetes Client Configuration</param>
-    /// <returns>Generated Pfx Path</returns>
+    /// <param name="options">Kubernetes Client Configuration.</param>
+    /// <returns>Generated Pfx Path.</returns>
     public static X509Certificate2 GetClientCertificate(KubernetesClientOptions options)
     {
         string? keyData = null;

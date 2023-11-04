@@ -82,7 +82,7 @@ internal sealed class ApiOperationsBuilder
                         NameTransformer.GetParameterName(body.Name),
                         _context.TypeNameResolver.GetParameterTypeName(o.Operation, body),
                         body.IsRequired,
-                        body.Description)
+                        $"The <see cref=\"{_context.TypeNameResolver.GetParameterTypeName(o.Operation, body)}\"/> for the operation.")
                     : null;
 
                 string resultType = _context.TypeNameResolver.GetResponseTypeName(o.Operation);

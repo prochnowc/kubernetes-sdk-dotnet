@@ -17,7 +17,7 @@ public class AuthProvider
     public string? Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the configuration for this auth provider
+    /// Gets or sets the configuration for this auth provider.
     /// </summary>
     [JsonPropertyName("config")]
     [YamlMember(Alias = "config", ApplyNamingConventions = false)]
