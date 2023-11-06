@@ -23,6 +23,11 @@ public sealed partial class KubernetesResponse : IDisposable
     private HttpResponseMessage? _response;
     private int _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubernetesResponse"/> class.
+    /// </summary>
+    /// <param name="response">The <see cref="HttpResponseMessage"/>.</param>
+    /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public KubernetesResponse(HttpResponseMessage response, IKubernetesSerializerFactory serializerFactory)
     {
         Ensure.Arg.NotNull(response);

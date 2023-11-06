@@ -16,7 +16,18 @@ internal sealed class ApiOperation
 
     public IReadOnlyCollection<ApiOperationParameter> QueryParameters { get; }
 
-    public IEnumerable<ApiOperationParameter> AllParameters => PathParameters.Concat(QueryParameters);
+    public IEnumerable<ApiOperationParameter> AllParameters
+    {
+        get
+        {
+            IEnumerable<ApiOperationParameter> all = PathParameters;
+            if (Body != null)
+                all = all.Concat(new[] { Body });
+
+            all = all.Concat(QueryParameters);
+            return all;
+        }
+    }
 
     public ApiOperationParameter? Body { get; }
 

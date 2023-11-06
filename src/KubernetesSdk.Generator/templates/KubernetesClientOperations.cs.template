@@ -4,11 +4,11 @@
 
 #nullable enable
 
-using Kubernetes.Models;
-using Kubernetes.Client;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Kubernetes.Models;
+using Kubernetes.Client;
 
 namespace Kubernetes.Client.Operations;
 
@@ -27,7 +27,8 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
     {{~ for method in Model.Methods ~}}
     {{ method.Description | xml_doc "summary" ~}}
     {{~ for parameter in method.AllParameters ~}}
-    {{ parameter.Description | xml_doc "param" $'name="{parameter.Name}"' ~}}
+    {{~ parameterName = parameter.ParameterName | string.remove_first "@" ~}}
+    {{ parameter.Description | xml_doc "param" $'name="{parameterName}"' ~}}
     {{~ end ~}}
     /// <param name="cancellationToken">Optional <see cref="CancellationToken" /> which can be used to cancel the request.</param>
     public async {{ method | dotnet_async_return_type }} {{ method.Name }}Async{{ if Model.Name == "CustomObjects" }}<T>{{ end }}(
@@ -65,6 +66,9 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
         var request = new KubernetesRequest(HttpMethods.{{ method.Method }}, requestUri);
         {{~ if method.Body != null ~}}
         request.Content = {{ method.Body.ParameterName }};
+        {{~ end ~}}
+        {{~ if (method.Name | string.starts_with "Watch") ~}}
+        request.Timeout = Timeout.InfiniteTimeSpan;
         {{~ end ~}}
 
         using var response = await Client.SendAsync(request, cancellationToken)

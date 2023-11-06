@@ -32,6 +32,11 @@ public sealed class KubernetesRequest
     public object? Content { get; set; }
 
     /// <summary>
+    /// Gets or sets the timeout of the request.
+    /// </summary>
+    public TimeSpan? Timeout { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KubernetesRequest"/> class.
     /// </summary>
     /// <param name="method">The HTTP method to use for the request.</param>

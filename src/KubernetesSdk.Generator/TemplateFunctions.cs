@@ -59,10 +59,7 @@ internal sealed class TemplateFunctions
 
     private static void DotnetFormatParametersCore(StringBuilder sb, ApiOperation operation)
     {
-        foreach (ApiOperationParameter parameter in operation.PathParameters.Concat(
-                     new[] { operation.Body }.Concat(operation.QueryParameters)
-                                             .Where(p => p != null)
-                                             .Select(p => p!)))
+        foreach (ApiOperationParameter parameter in operation.AllParameters)
         {
             if (sb.Length > 0)
             {

@@ -55,6 +55,11 @@ public sealed class KubernetesClientBuilder
         return this;
     }
 
+    public KubernetesClientBuilder ConfigureFromDefault(Action<DefaultOptionsProvider>? configure = null)
+    {
+        return ConfigureFrom(configure);
+    }
+
     public KubernetesClientBuilder ConfigureFromKubeConfig(Action<KubeConfigOptionsProvider>? configure = null)
     {
         return ConfigureFrom(configure);
