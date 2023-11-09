@@ -74,7 +74,7 @@ public class KubernetesClient
     /// <param name="request">The <see cref="KubernetesRequest"/> to send.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="KubernetesResponse"/>.</returns>
-    /// <exception cref="KubernetesRequestException">Server returned an error or the was an error processing the response.</exception>
+    /// <exception cref="KubernetesRequestException">Server returned an error or there was an error processing the response.</exception>
     /// <exception cref="TaskCanceledException">Request timed out or was canceled.</exception>
     public virtual async Task<KubernetesResponse> SendAsync(KubernetesRequest request, CancellationToken cancellationToken = default)
     {
