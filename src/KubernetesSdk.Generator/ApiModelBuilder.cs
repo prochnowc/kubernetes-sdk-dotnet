@@ -72,12 +72,8 @@ internal sealed class ApiModelBuilder
             }
             else if (schema.Properties.TryGetValue("metadata", out JsonSchemaProperty? metadataProperty))
             {
-                string nullable = metadataProperty.IsRequired
-                    ? string.Empty
-                    : "?";
-
                 interfaces.Add(
-                    $"IKubernetesObject<{_context.TypeNameResolver.GetTypeName(metadataProperty.Reference)}{nullable}>");
+                    $"IKubernetesObject<{_context.TypeNameResolver.GetTypeName(metadataProperty.Reference)}>");
             }
             else
             {
@@ -88,11 +84,7 @@ internal sealed class ApiModelBuilder
             {
                 if (specProperty.Reference?.ActualProperties.Any() == true)
                 {
-                    string nullable = specProperty.IsRequired
-                        ? string.Empty
-                        : "?";
-
-                    interfaces.Add($"ISpec<{_context.TypeNameResolver.GetTypeName(specProperty.Reference)}{nullable}>");
+                    interfaces.Add($"ISpec<{_context.TypeNameResolver.GetTypeName(specProperty.Reference)}>");
                 }
             }
 
@@ -114,8 +106,26 @@ internal sealed class ApiModelBuilder
 
     private List<ApiModelProperty> GetModelProperties(JsonSchema schema)
     {
+        bool IsRequired(JsonSchemaProperty property)
+        {
+            switch (property.Name)
+            {
+                case "metadata":
+                {
+                    string typeName = _context.TypeNameResolver.GetTypeName(property);
+                    return typeName is "V1ObjectMeta" or "V1ListMeta";
+                }
+
+                case "spec":
+                    return true;
+
+                default:
+                    return property.IsRequired;
+            }
+        }
+
         return schema.Properties.Values
-                     .OrderBy(p => !p.IsRequired)
+                     .OrderBy(p => !IsRequired(p))
                      .Select(
                          p =>
                              new ApiModelProperty(
@@ -123,7 +133,7 @@ internal sealed class ApiModelBuilder
                                  _context.TypeNameResolver.GetTypeName(p),
                                  NameTransformer.GetPropertyName(p.Name.ToPascalCase()),
                                  NameTransformer.GetParameterName(p.Name.ToCamelCase()),
-                                 p.IsRequired,
+                                 IsRequired(p),
                                  p.Description))
                      .ToList();
     }

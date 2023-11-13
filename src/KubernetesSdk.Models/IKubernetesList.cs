@@ -15,7 +15,7 @@ namespace Kubernetes.Models;
 /// Represents a list of Kubernetes objects.
 /// </summary>
 /// <typeparam name="T">The type of the Kubernetes object.</typeparam>
-public interface IKubernetesList<T> : IKubernetesObject<V1ListMeta?>
+public interface IKubernetesList<T> : IKubernetesObject<V1ListMeta>
     where T : IKubernetesObject
 {
     /// <summary>

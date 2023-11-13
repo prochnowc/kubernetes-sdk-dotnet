@@ -53,8 +53,6 @@ internal sealed class TypeNameResolver
         if (parameter.Schema?.Reference != null)
         {
             parameterTypeName = GetTypeName(parameter.Schema.Reference);
-            if (!parameter.IsRequired)
-                parameterTypeName += "?";
         }
         else if (parameter.Schema != null)
         {
@@ -123,29 +121,18 @@ internal sealed class TypeNameResolver
     {
         if (p.Reference != null)
         {
-            if (p.IsRequired)
-            {
-                return GetTypeName(p.Reference);
-            }
-            else
-            {
-                return GetTypeName(p.Reference) + "?";
-            }
+            return GetTypeName(p.Reference);
         }
 
         if (p.IsArray)
         {
             // getType
-            return $"List<{GetTypeName(p.Item, p)}>" + (p.IsRequired
-                ? string.Empty
-                : "?");
+            return $"List<{GetTypeName(p.Item, p)}>";
         }
 
         if (p.IsDictionary && p.AdditionalPropertiesSchema != null)
         {
-            return $"Dictionary<string, {GetTypeName(p.AdditionalPropertiesSchema, p)}>" + (p.IsRequired
-                ? string.Empty
-                : "?");
+            return $"Dictionary<string, {GetTypeName(p.AdditionalPropertiesSchema, p)}>";
         }
 
         return GetTypeName(p.Type, p.Name, p.IsRequired, p.Format);
@@ -187,60 +174,46 @@ internal sealed class TypeNameResolver
 
     private string GetTypeName(JsonObjectType jsonType, string name, bool required, string format)
     {
-        if (name == "pretty" && !required)
+        if (name == "pretty")
         {
-            return "bool?";
+            return "bool";
         }
 
         switch (jsonType)
         {
             case JsonObjectType.Boolean:
-                return required
-                    ? "bool"
-                    : "bool?";
+                return "bool";
 
             case JsonObjectType.Integer:
                 switch (format)
                 {
                     case "int64":
-                        return required
-                            ? "long"
-                            : "long?";
+                        return "long";
 
                     default:
-                        return required
-                            ? "int"
-                            : "int?";
+                        return "int";
                 }
 
             case JsonObjectType.Number:
-                return required
-                    ? "double"
-                    : "double?";
+                return "double";
 
             case JsonObjectType.String:
                 switch (format)
                 {
                     case "byte":
-                        return required
-                            ? "byte[]"
-                            : "byte[]?";
+                        return "byte[]";
 
                     case "date-time":
                         // eventTime is required but should be optional, see https://github.com/kubernetes-client/csharp/issues/1197
                         if (name == "eventTime")
                         {
-                            return "global::System.DateTime?";
+                            return "global::System.DateTime";
                         }
 
-                        return required
-                            ? "global::System.DateTime"
-                            : "global::System.DateTime?";
+                        return "global::System.DateTime";
                 }
 
-                return required
-                    ? "string"
-                    : "string?";
+                return "string";
 
             case JsonObjectType.Object:
                 switch (format)
@@ -249,9 +222,7 @@ internal sealed class TypeNameResolver
                         return "global::System.IO.Stream";
                 }
 
-                return required
-                    ? "object"
-                    : "object?";
+                return "object";
 
             default:
                 throw new NotSupportedException();

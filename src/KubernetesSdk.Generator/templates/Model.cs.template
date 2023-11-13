@@ -23,7 +23,7 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     {{ property.Description | xml_doc "summary" ~}}
     [JsonPropertyName("{{ property.Name }}")]
     [YamlMember(Alias = "{{ property.Name }}", ApplyNamingConventions = false)]
-    public {{ property.Type }} {{ property.PropertyName }} { get; set; }
+    public {{ property.PropertyType }} {{ property.PropertyName }} { get; set; }
     {{~ end ~}}
 
     /// <summary>
@@ -31,16 +31,6 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     /// </summary>
     public {{ Model.Type }}()
     {
-        {{- for property in Model.Properties }}
-        {{- if property.IsRequired }}
-        {{ property.PropertyName }} =
-        {{- if property.Type == "string" }} string.Empty
-        {{- else if property.Type == "byte[]" }} new byte[0]
-        {{- else }} new ()
-        {{- end }};
-        {{- end }}
-        {{- end }}
-
         Init();
     }
 
@@ -54,7 +44,7 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
     {{~ end ~}}
     public {{ Model.Type }}(
         {{~ for property in Model.Properties ~}}
-        {{ property.Type }} {{ property.ParameterName }}{{ if !property.IsRequired }} = default{{ end }}{{ if !for.last }},{{ end }}
+        {{ property.ParameterType }} {{ property.ParameterName }}{{ if !property.IsRequired }} = default{{ end }}{{ if !for.last }},{{ end }}
         {{~ end ~}}
         )
     {
@@ -68,6 +58,16 @@ public partial class {{ Model.Type }} {{ Model | dotnet_format_base_types }}
 
     private void Init()
     {
+        {{- for property in Model.Properties }}
+        {{- if property.IsRequired && !property.IsValueType }}
+        {{ property.PropertyName }} ??=
+        {{- if property.Type == "string" }} string.Empty
+        {{- else if property.Type == "byte[]" }} new byte[0]
+        {{- else }} new ()
+        {{- end }};
+        {{- end }}
+        {{- end }}
+
         {{~ if Model.GroupVersionKind ~}}
         {{~ if (Model.GroupVersionKind.Group | string.empty) ~}}
         ApiVersion ??= "{{ Model.GroupVersionKind.Version }}";

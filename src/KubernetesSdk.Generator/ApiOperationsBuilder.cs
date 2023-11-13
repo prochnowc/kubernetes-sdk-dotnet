@@ -79,8 +79,8 @@ internal sealed class ApiOperationsBuilder
                 ApiOperationParameter? bodyParameter = body != null
                     ? new ApiOperationParameter(
                         body.Name,
-                        NameTransformer.GetParameterName(body.Name),
                         _context.TypeNameResolver.GetParameterTypeName(o.Operation, body),
+                        NameTransformer.GetParameterName(body.Name),
                         body.IsRequired,
                         $"The <see cref=\"{_context.TypeNameResolver.GetParameterTypeName(o.Operation, body)}\"/> for the operation.")
                     : null;
@@ -244,8 +244,8 @@ internal sealed class ApiOperationsBuilder
                          .Select(
                              p => new ApiOperationParameter(
                                  p.Parameter.Name,
-                                 NameTransformer.GetParameterName(p.Name),
                                  _context.TypeNameResolver.GetParameterTypeName((OpenApiOperation)p.Parameter.Parent, p.Parameter),
+                                 NameTransformer.GetParameterName(p.Name),
                                  p.Parameter.IsRequired,
                                  p.Parameter.Description))
                          .ToArray();
