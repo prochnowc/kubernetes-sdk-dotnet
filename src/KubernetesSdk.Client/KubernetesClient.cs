@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kubernetes.Client.Operations;
 using Kubernetes.Serialization;
+using Polly.Retry;
 
 namespace Kubernetes.Client;
 
@@ -95,12 +96,20 @@ public class KubernetesClient
         KubernetesResponse? response = null;
         try
         {
+            AsyncRetryPolicy<HttpResponseMessage> policy =
+                Options.HttpClientRetryPolicy ?? KubernetesClientDefaults.HttpClientRetryPolicy;
+
+            // ReSharper disable once AccessToDisposedClosure
             HttpResponseMessage httpResponse =
-                await _httpClient.SendAsync(
-                                     httpRequest,
-                                     HttpCompletionOption.ResponseHeadersRead,
-                                     cancellationToken)
-                                 .ConfigureAwait(false);
+                await policy.ExecuteAsync(
+                                async ct =>
+                                    await _httpClient.SendAsync(
+                                                         httpRequest,
+                                                         HttpCompletionOption.ResponseHeadersRead,
+                                                         ct)
+                                                     .ConfigureAwait(false),
+                                cancellationToken)
+                            .ConfigureAwait(false);
 
             response = new KubernetesResponse(httpResponse, _serializerFactory);
             await response.EnsureSuccessStatusCodeAsync(cancellationToken)

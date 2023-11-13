@@ -1,6 +1,12 @@
+// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
 using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using Kubernetes.Client.Authentication;
+using Polly.Retry;
 
 namespace Kubernetes.Client
 {
@@ -62,7 +68,7 @@ namespace Kubernetes.Client
         /// <summary>
         /// Gets or sets the HTTP user agent.
         /// </summary>
-        public string? UserAgent { get; set; }
+        public ProductInfoHeaderValue? UserAgent { get; set; }
 
         /// <summary>
         /// Gets or sets the username (HTTP basic authentication).
@@ -85,6 +91,11 @@ namespace Kubernetes.Client
         public ITokenProvider? TokenProvider { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to not use HTTP/2 even it is available.
+        /// </summary>
+        public bool DisableHttp2 { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the timeout of REST calls to Kubernetes server.
         /// </summary>
         /// <remarks>
@@ -93,8 +104,8 @@ namespace Kubernetes.Client
         public TimeSpan HttpClientTimeout { get; set; } = TimeSpan.FromSeconds(100);
 
         /// <summary>
-        /// Gets or sets a value indicating whether to not use HTTP/2 even it is available.
+        /// Gets or sets the policy for retrying HTTP requests.
         /// </summary>
-        public bool DisableHttp2 { get; set; } = false;
+        public AsyncRetryPolicy<HttpResponseMessage>? HttpClientRetryPolicy { get; set; }
     }
 }
