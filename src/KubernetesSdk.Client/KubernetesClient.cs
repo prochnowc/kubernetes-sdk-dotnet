@@ -28,6 +28,11 @@ public class KubernetesClient
     public KubernetesClientOptions Options => _options;
 
     /// <summary>
+    /// Gets the <see cref="IKubernetesSerializerFactory"/>.
+    /// </summary>
+    public IKubernetesSerializerFactory SerializerFactory => _serializerFactory;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KubernetesClient"/> class using the
     /// <see cref="DefaultOptionsProvider"/> and <see cref="KubernetesSerializerFactory.Instance"/>.
     /// </summary>
