@@ -27,7 +27,7 @@ public sealed class KubernetesList<T> : IKubernetesList<T>
     /// <inheritdoc />
     [JsonPropertyName("metadata")]
     [YamlMember(Alias = "metadata", ApplyNamingConventions = false)]
-    public V1ListMeta? Metadata { get; set; }
+    public V1ListMeta Metadata { get; set; }
 
     /// <inheritdoc />
     [JsonPropertyName("items")]
@@ -39,6 +39,7 @@ public sealed class KubernetesList<T> : IKubernetesList<T>
     /// </summary>
     public KubernetesList()
     {
+        Metadata = new V1ListMeta();
         Items = new List<T>();
     }
 
@@ -50,10 +51,10 @@ public sealed class KubernetesList<T> : IKubernetesList<T>
     /// <param name="kind">The kind of the list.</param>
     /// <param name="metadata">The <see cref="V1ListMeta"/>.</param>
     public KubernetesList(
+        V1ListMeta metadata,
         List<T> items,
         string? apiVersion = default,
-        string? kind = default,
-        V1ListMeta? metadata = default)
+        string? kind = default)
     {
         Items = items;
         ApiVersion = apiVersion;
