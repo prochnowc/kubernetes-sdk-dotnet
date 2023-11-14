@@ -3,16 +3,14 @@
 The Kubernetes SDK for .NET is a set of libraries and tools to develop software which
 interacts with the Kubernetes open source container orchestrator.
 
-The SDK is in a very early stage but should already be usable.
+The project is in a early stage but should already be usable.
 
-Current features:
+Advantages over the official Kubernetes client for .NET:
 
-* A client library to access the Kubernetes API server
-* An integration library for `Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Http`
-
-Planned features:
-
-* Libraries and tools to develop Kubernetes operators
+* Nullable annotations
+* Compatible with AOT
+* Seamless integration with `Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Http`
+* Works with Windows containers
 
 ## The Kubernetes SDK for .NET
 
