@@ -2,10 +2,12 @@
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using Kubernetes.Client.Authentication;
+using Kubernetes.Client.Http;
 using Polly.Retry;
 
 namespace Kubernetes.Client
@@ -107,5 +109,14 @@ namespace Kubernetes.Client
         /// Gets or sets the policy for retrying HTTP requests.
         /// </summary>
         public AsyncRetryPolicy<HttpResponseMessage>? HttpClientRetryPolicy { get; set; }
+
+        /// <summary>
+        /// Gets the list of HTTP message handler factories.
+        /// </summary>
+        public IList<Func<KubernetesClientOptions, DelegatingHandler>> HttpMessageHandlers { get; } =
+            new List<Func<KubernetesClientOptions, DelegatingHandler>>
+            {
+                KubernetesHttpClientFactory.CreateAuthenticationMessageHandler,
+            };
     }
 }

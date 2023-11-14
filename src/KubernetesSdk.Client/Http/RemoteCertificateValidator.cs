@@ -1,8 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Kubernetes.Client.HttpMessageHandlers;
+namespace Kubernetes.Client.Http;
 
 internal sealed class RemoteCertificateValidator
 {

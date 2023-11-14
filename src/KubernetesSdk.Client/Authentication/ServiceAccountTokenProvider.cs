@@ -27,7 +27,8 @@ namespace Kubernetes.Client.Authentication
         {
             if (forceRefresh || _tokenExpiresAt < DateTime.UtcNow)
             {
-                _token = await ReadTokenAsync();
+                _token = await ReadTokenAsync()
+                    .ConfigureAwait(false);
 
                 // in fact, the token has a expiry of 10 minutes and kubelet
                 // refreshes it at 8 minutes of its lifetime.

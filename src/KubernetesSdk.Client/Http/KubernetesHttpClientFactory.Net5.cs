@@ -8,10 +8,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Kubernetes.Client.HttpMessageHandlers;
+namespace Kubernetes.Client.Http;
 
-public static partial class MessageHandlerFactory
+public static partial class KubernetesHttpClientFactory
 {
+    /// <summary>
+    /// Creates the primary message handler used by the <see cref="HttpClient"/> of a <see cref="KubernetesClient"/>.
+    /// </summary>
+    /// <param name="options">The <see cref="KubernetesClientOptions"/>.</param>
+    /// <returns>The primary <see cref="HttpMessageHandler"/>.</returns>
     [SuppressMessage(
         "IDisposableAnalyzers.Correctness",
         "IDISP001:Dispose created",
@@ -20,7 +25,7 @@ public static partial class MessageHandlerFactory
         "IDisposableAnalyzers.Correctness",
         "IDISP011:Don\'t return disposed instance",
         Justification = "Certificate is disposed by the HttpMessageHandlerWrapper.")]
-    public static HttpMessageHandler CreatePrimaryHttpMessageHandler(KubernetesClientOptions options)
+    public static HttpMessageHandler CreatePrimaryMessageHandler(KubernetesClientOptions options)
     {
         var result = new SocketsHttpHandler
         {

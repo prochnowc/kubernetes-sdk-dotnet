@@ -46,33 +46,4 @@ public class LeaderElectionRecord
     /// </summary>
     [JsonPropertyName("leaderTransitions")]
     public int LeaderTransitions { get; set; }
-
-    public bool Equals(LeaderElectionRecord? other)
-    {
-        return HolderIdentity == other?.HolderIdentity
-               && LeaseDurationSeconds == other?.LeaseDurationSeconds
-               && Nullable.Equals(AcquireTime, other.AcquireTime)
-               && Nullable.Equals(RenewTime, other.RenewTime)
-               && LeaderTransitions == other?.LeaderTransitions;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj))
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, obj))
-        {
-            return true;
-        }
-
-        if (obj.GetType() != GetType())
-        {
-            return false;
-        }
-
-        return Equals((LeaderElectionRecord)obj);
-    }
 }

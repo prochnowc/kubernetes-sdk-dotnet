@@ -25,7 +25,7 @@
 
   <!-- Disable nullable reference type warning for non-annotated frameworks -->
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0' or '$(TargetFramework)'=='net462'">
-    <NoWarn>$(NoWarn);CS8600;CS8602</NoWarn>
+    <NoWarn>$(NoWarn);CS8600;CS8601;CS8602;CS8604</NoWarn>
   </PropertyGroup>
 
   <!-- Code Analysis -->

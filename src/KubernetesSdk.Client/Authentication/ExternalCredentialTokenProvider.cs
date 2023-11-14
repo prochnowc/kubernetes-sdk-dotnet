@@ -53,7 +53,7 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
         if (_credential.Status?.IsValid() != true)
         {
             throw new InvalidOperationException(
-                $"Received bas response from external command to receive credentials");
+                $"Received bad response from external command to receive credentials");
         }
     }
 }

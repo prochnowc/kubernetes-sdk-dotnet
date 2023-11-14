@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Kubernetes.Client.Http;
 using Kubernetes.Client.Operations;
 using Kubernetes.Serialization;
 using Polly.Retry;
@@ -49,7 +50,7 @@ public class KubernetesClient
     /// <param name="options">The <see cref="KubernetesClientOptions"/>.</param>
     /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public KubernetesClient(KubernetesClientOptions options, IKubernetesSerializerFactory serializerFactory)
-        : this(options, serializerFactory, KubernetesHttpClientFactory.Default)
+        : this(options, serializerFactory, KubernetesHttpClientFactory.CreateHttpClient)
     {
     }
 

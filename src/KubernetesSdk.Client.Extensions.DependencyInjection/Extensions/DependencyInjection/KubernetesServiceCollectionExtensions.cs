@@ -1,7 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using Kubernetes.Client.HttpMessageHandlers;
+using Kubernetes.Client.Http;
 using Kubernetes.Client.KubeConfig;
 using Kubernetes.Serialization;
 using Kubernetes.Serialization.Json;
@@ -81,25 +83,19 @@ public static class KubernetesServiceCollectionExtensions
                     sp =>
                     {
                         var options = sp.GetOptions<KubernetesClientOptions>(name);
-                        return MessageHandlerFactory.CreatePrimaryHttpMessageHandler(options);
+                        return KubernetesHttpClientFactory.CreatePrimaryMessageHandler(options);
                     })
                 .AddHttpMessageHandler(
                     sp =>
                     {
                         var options = sp.GetOptions<KubernetesClientOptions>(name);
-                        return MessageHandlerFactory.CreateAuthenticationMessageHandler(options);
+                        return KubernetesHttpClientFactory.CreateMessageHandlers(options);
                     })
                 .ConfigureHttpClient(
                     (sp, c) =>
                     {
                         var options = GetOptions<KubernetesClientOptions>(sp, name);
-
-                        string host = !string.IsNullOrWhiteSpace(options.Host)
-                            ? options.Host!
-                            : "https://localhost";
-
-                        c.BaseAddress = new Uri(host + (host.EndsWith("/") ? string.Empty : "/"));
-                        c.Timeout = Timeout.InfiniteTimeSpan;
+                        KubernetesHttpClientFactory.ConfigureHttpClient(c, options);
                     });
 
         // The default KubernetesClient can be resolved directly from DI container
