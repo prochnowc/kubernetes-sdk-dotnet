@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net462;netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <RootNamespace>Kubernetes.Serialization</RootNamespace>
-    <Description>.NET Serialization for the Kubernetes open source container orchestrator.</Description>
+    <Description>Serialization library for the Kubernetes open source container orchestrator.</Description>
     <KubernetesGeneratorOptions>jsoncontext,yamlcontext</KubernetesGeneratorOptions>
   </PropertyGroup>
 

@@ -1,11 +1,11 @@
 <Project>
   <PropertyGroup>
     <Authors>Christian Prochnow and Contributors</Authors>
-    <Product>Kubernetes .NET SDK</Product>
+    <Product>Kubernetes SDK for .NET</Product>
     <Copyright>Copyright (c) 2023 Christian Prochnow and Contributors</Copyright>
-    <Description>.NET SDK for the Kubernetes open source container orchestrator.</Description>
     <Version>1.0.0</Version>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>Kubernetes;SDK</PackageTags>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 

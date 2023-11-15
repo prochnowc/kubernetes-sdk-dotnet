@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>net462;netstandard2.0;net6.0</TargetFrameworks>
     <RootNamespace>Kubernetes.Client</RootNamespace>
+    <Description>Integrates the client library with Microsoft.Extensions.DepdendencyInjection.</Description>
+    <PackageTags>$(PackageTags);Client;Extensions;DependencyInjection</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
