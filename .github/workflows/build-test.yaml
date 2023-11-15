@@ -47,6 +47,7 @@ jobs:
 #          files: '*.cobertura.xml'
 #
       - name: Upload artifacts
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
         with:
           name: artifacts
@@ -54,7 +55,7 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
-          name: test-results
+          name: test-results-${{ matrix.os }}
           path: ./test-results
         if: ${{ always() }} # Always run this step even on failure
 
@@ -63,6 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: testing
     needs: build
+    name: Deploy Testing
     steps:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -75,7 +77,7 @@ jobs:
           name: artifacts
           path: ./artifacts
       - name: Push packages
-        run: dotnet nuget push -s ${{vars.MYGET_URL}} -k ${{secrets.MYGET_API_KEY}} ./artifacts/*.*nupkg
+        run: dotnet nuget push -s ${{vars.MYGET_URL}} -k ${{secrets.MYGET_API_KEY}} ./artifacts/*.nupkg
 
   deploy-release:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -84,6 +86,7 @@ jobs:
     needs:
       - build
       - deploy-testing
+    name: Deploy Production
     steps:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -96,4 +99,4 @@ jobs:
           name: artifacts
           path: ./artifacts
       - name: Push packages
-        run: dotnet nuget push -s ${{vars.NUGET_URL}} -k ${{secrets.NUGET_API_KEY}} ./artifacts/*.*nupkg
+        run: dotnet nuget push -s ${{vars.NUGET_URL}} -k ${{secrets.NUGET_API_KEY}} ./artifacts/*.nupkg
