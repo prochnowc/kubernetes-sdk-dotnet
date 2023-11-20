@@ -22,14 +22,5 @@ var client = host.Services.GetRequiredService<KubernetesClient>();
 V1NamespaceList namespaces = await client.CoreV1().ListNamespaceAsync();
 foreach (V1Namespace ns in namespaces.Items)
 {
-    Console.WriteLine(ns.Metadata?.Name);
-}
-
-IWatcher<V1Namespace> list = await client.CoreV1()
-                                         .WatchNamespaceAsync();
-
-WatchEvent<V1Namespace>? @event;
-while ((@event = await list.ReadNextAsync()) != null)
-{
-    Console.WriteLine(@event.Type);
+    Console.WriteLine(ns.Metadata.Name);
 }
