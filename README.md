@@ -47,12 +47,14 @@ foreach (V1Namespace ns in namespaces.Items)
 }
 ```
 
+### Configuring the client
+
 By default the `KubernetesClient` constructor will resolve it's configuration from `~/.kube/config`, or, when
 running in a cluster, from the in-cluster config.
 
 You can explicitly pass an instance of `KubernetesClientOptions`
 to the constructor, by either manually configuring an instance of `KubernetesClientOptions`, or by using one
-of the pre-defined option providers (`KubeConfigOptionsProvider`, `InClusterOptionsProvider`):
+of the pre-defined option providers `DefaultOptionsProvider`, `KubeConfigOptionsProvider` or `InClusterOptionsProvider`:
 
 ```csharp
 var optionsProvider = new KubeConfigOptionsProvider() { Context = "my-context" };
@@ -60,7 +62,8 @@ KubernetesCLientOptions options = optionsProvider.CreateOptions();
 var client = new KubernetesClient(options);
 ```
 
-The code above will instantiate a new `KubernetesClient` using the options of cluster context `my-context` from the `~/.kube/config` file.
+The code above will instantiate a new `KubernetesClient` using the options resolved from the cluster context `my-context`
+defined in the `~/.kube/config` file.
 
 ## Using the Microsoft.Extensions integration
 
@@ -94,3 +97,22 @@ configuration you can call one of the various `ConfigureXX()` methods on the cli
 services.AddKubernetesClient()
         .ConfigureFromKubeConfig();
 ```
+
+### Registering named clients
+
+For advanced scenarios it is also possible to register multiple clients with different configuration.
+To register a named client simply pass a name to the `AddKubernetesClient()` extension method:
+
+```csharp
+services.AddKubernetesClient("Client1");
+```
+
+Named clients can be resolved using the `IKubernetesClientFactory`:
+
+```csharp
+var clientFactory = serviceProvider.GetRequiredService<IKubernetesClientFactory>();
+KubernetesClient client = clientFactory.CreateClient("Client1");
+```
+
+Note that the name for the default client is `string.Empty` and can always be resolved
+directly, without using the factory.
