@@ -10,9 +10,9 @@ internal sealed class KubernetesClientFactory : IKubernetesClientFactory
     private readonly IKubernetesSerializerFactory _serializerFactory;
     private readonly IOptionsMonitor<KubernetesClientOptions> _clientOptionsSnapshot;
 
-    internal static string GetHttpClientName(string? name)
+    internal static string GetHttpClientName(string name)
     {
-        return string.IsNullOrEmpty(name)
+        return name == string.Empty
             ? "KubernetesClient"
             : $"KubernetesClient-{name}";
     }
@@ -27,7 +27,7 @@ internal sealed class KubernetesClientFactory : IKubernetesClientFactory
         _clientOptionsSnapshot = clientOptionsSnapshot;
     }
 
-    public KubernetesClient CreateClient(string? name)
+    public KubernetesClient CreateClient(string name)
     {
         return new KubernetesClient(
             _clientOptionsSnapshot.Get(name),

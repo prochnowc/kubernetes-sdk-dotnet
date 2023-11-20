@@ -19,10 +19,10 @@ public static class KubernetesServiceCollectionExtensions
     private static T GetOptions<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(
         this IServiceProvider sp,
-        string? name = null)
+        string name = "")
     {
         return sp.GetRequiredService<IOptionsMonitor<T>>()
-                 .Get(name ?? Options.DefaultName);
+                 .Get(name);
     }
 
     public static KubernetesSerializerBuilder AddKubernetesSerializer(this IServiceCollection services)
@@ -60,6 +60,7 @@ public static class KubernetesServiceCollectionExtensions
     public static KubernetesClientBuilder AddKubernetesClient(this IServiceCollection services, string name)
     {
         Ensure.Arg.NotNull(services);
+        Ensure.Arg.NotNull(name);
 
         AddKubernetesClientCore(services);
 
