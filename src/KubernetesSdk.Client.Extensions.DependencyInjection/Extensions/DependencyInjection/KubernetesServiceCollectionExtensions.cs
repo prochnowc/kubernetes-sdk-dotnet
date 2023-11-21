@@ -14,6 +14,9 @@ using Microsoft.Extensions.Options;
 
 namespace Kubernetes.Client.Extensions.DependencyInjection;
 
+/// <summary>
+/// Provides extension methods to register Kubernetes client services.
+/// </summary>
 public static class KubernetesServiceCollectionExtensions
 {
     private static T GetOptions<
@@ -25,6 +28,11 @@ public static class KubernetesServiceCollectionExtensions
                  .Get(name);
     }
 
+    /// <summary>
+    /// Adds Kubernetes serializer services.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="KubernetesSerializerBuilder"/> that can be used to configure serialization.</returns>
     public static KubernetesSerializerBuilder AddKubernetesSerializer(this IServiceCollection services)
     {
         Ensure.Arg.NotNull(services);
@@ -57,6 +65,12 @@ public static class KubernetesServiceCollectionExtensions
         services.TryAddSingleton<IKubernetesClientFactory, KubernetesClientFactory>();
     }
 
+    /// <summary>
+    /// Adds a named <see cref="KubernetesClient"/> to the <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="name">The name of the <see cref="KubernetesClient"/>. Specify <c>string.Empty</c> to configure the default client.</param>
+    /// <returns>The <see cref="KubernetesClientBuilder"/> that can be used to configure the client.</returns>
     public static KubernetesClientBuilder AddKubernetesClient(this IServiceCollection services, string name)
     {
         Ensure.Arg.NotNull(services);
@@ -112,6 +126,11 @@ public static class KubernetesServiceCollectionExtensions
         return new KubernetesClientBuilder(services, name);
     }
 
+    /// <summary>
+    /// Adds the default <see cref="KubernetesClient"/> to the <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="KubernetesClientBuilder"/> that can be used to configure the client.</returns>
     public static KubernetesClientBuilder AddKubernetesClient(this IServiceCollection services)
     {
         return AddKubernetesClient(services, string.Empty);
