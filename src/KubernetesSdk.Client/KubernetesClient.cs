@@ -70,6 +70,8 @@ public class KubernetesClient
         Ensure.Arg.NotNull(serializerFactory);
         Ensure.Arg.NotNull(httpClientFactory);
 
+        options = options.Seal();
+
         _options = options;
         _serializerFactory = serializerFactory;
         _httpClient = httpClientFactory(options);
