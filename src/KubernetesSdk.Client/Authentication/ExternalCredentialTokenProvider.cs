@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Kubernetes.Client.KubeConfig;
@@ -7,6 +10,9 @@ using Kubernetes.Serialization;
 
 namespace Kubernetes.Client.Authentication;
 
+/// <summary>
+/// Provides a bearer token from an external credential process.
+/// </summary>
 public sealed class ExternalCredentialTokenProvider : ITokenProvider
 {
     private readonly ExternalCredentialProcess _process;
@@ -18,8 +24,16 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
         _credential = credential;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalCredentialTokenProvider"/> class.
+    /// </summary>
+    /// <param name="credential">The external credential.</param>
+    /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public ExternalCredentialTokenProvider(ExternalCredential credential, IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(credential);
+        Ensure.Arg.NotNull(serializerFactory);
+
         _process = new ExternalCredentialProcess(credential, serializerFactory);
     }
 
@@ -34,6 +48,7 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
         return DateTime.UtcNow.AddSeconds(30) > _credential.Status.ExpirationTimestamp;
     }
 
+    /// <inheritdoc />
     public async Task<string> GetTokenAsync(bool forceRefresh, CancellationToken cancellationToken)
     {
         if (forceRefresh || NeedsRefresh())
