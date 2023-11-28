@@ -41,6 +41,10 @@ public sealed class KubernetesJsonOptions
         return options;
     }
 
+    /// <summary>
+    /// Configures default <see cref="KubernetesJsonOptions"/>.
+    /// </summary>
+    /// <param name="configure">The delegate used to configure the defaults.</param>
     public static void ConfigureDefaults(Action<KubernetesJsonOptions> configure)
     {
         Defaults.Configure(configure);

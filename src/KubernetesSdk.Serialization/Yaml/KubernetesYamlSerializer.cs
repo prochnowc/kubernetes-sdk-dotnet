@@ -30,6 +30,7 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
         _deserializer = options.BuildDeserializer();
     }
 
+    /// <inheritdoc />
     public async Task<T?> DeserializeAsync<T>(
         Stream stream,
         CancellationToken cancellationToken = default)
@@ -41,6 +42,7 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
         return Deserialize<T>(content.AsSpan());
     }
 
+    /// <inheritdoc />
     public T? Deserialize<T>(Stream stream)
     {
         using var reader = new StreamReader(stream, Encoding.UTF8, false, 1024, true);
@@ -48,11 +50,13 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
         return Deserialize<T>(content.AsSpan());
     }
 
+    /// <inheritdoc />
     public T? Deserialize<T>(ReadOnlySpan<char> content)
     {
         return _deserializer.Deserialize<T?>(content.ToString());
     }
 
+    /// <inheritdoc />
     public async Task SerializeAsync<T>(
         Stream stream,
         T value,
@@ -64,6 +68,7 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
                     .ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     public void Serialize<T>(Stream stream, T value)
     {
         using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
@@ -71,6 +76,7 @@ public sealed class KubernetesYamlSerializer : IKubernetesSerializer
         writer.Write(content);
     }
 
+    /// <inheritdoc />
     public string Serialize<T>(T value)
     {
         return value == null

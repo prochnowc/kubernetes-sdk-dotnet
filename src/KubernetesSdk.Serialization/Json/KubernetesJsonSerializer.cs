@@ -32,6 +32,7 @@ public sealed class KubernetesJsonSerializer : IKubernetesSerializer
         _options = options.JsonSerializerOptions;
     }
 
+    /// <inheritdoc />
     public async Task<T?> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)
     {
         Ensure.Arg.NotNull(stream);
@@ -40,17 +41,20 @@ public sealed class KubernetesJsonSerializer : IKubernetesSerializer
                                    .ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     public T? Deserialize<T>(Stream stream)
     {
         Ensure.Arg.NotNull(stream);
         return JsonSerializer.Deserialize<T>(stream, _options);
     }
 
+    /// <inheritdoc />
     public T? Deserialize<T>(ReadOnlySpan<char> content)
     {
         return JsonSerializer.Deserialize<T>(content, _options);
     }
 
+    /// <inheritdoc />
     public async Task SerializeAsync<T>(Stream stream, T value, CancellationToken cancellationToken = default)
     {
         Ensure.Arg.NotNull(stream);
@@ -59,12 +63,14 @@ public sealed class KubernetesJsonSerializer : IKubernetesSerializer
                             .ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
     public void Serialize<T>(Stream stream, T value)
     {
         Ensure.Arg.NotNull(stream);
         JsonSerializer.Serialize(stream, value, _options);
     }
 
+    /// <inheritdoc />
     public string Serialize<T>(T value)
     {
         return JsonSerializer.Serialize(value, _options);

@@ -43,11 +43,19 @@ public sealed class KubernetesYamlOptions
 
     internal static KubernetesYamlOptions Default => Defaults.Value;
 
+    /// <summary>
+    /// Configures default <see cref="KubernetesYamlOptions"/>.
+    /// </summary>
+    /// <param name="configure">The delegate used to configure the defaults.</param>
     public static void ConfigureDefaults(Action<KubernetesYamlOptions> configure)
     {
         Defaults.Configure(configure);
     }
 
+    /// <summary>
+    /// Configures the YAML serializer.
+    /// </summary>
+    /// <param name="configureBuilder">The delegate used to configure the YAML serializer.</param>
     public void ConfigureSerializer(Action<StaticSerializerBuilder> configureBuilder)
     {
         Ensure.Arg.NotNull(configureBuilder);
@@ -65,6 +73,10 @@ public sealed class KubernetesYamlOptions
         return builder.Build();
     }
 
+    /// <summary>
+    /// Configures the YAML deserializer.
+    /// </summary>
+    /// <param name="configureBuilder">A delegate used to configure the YAML deserializer.</param>
     public void ConfigureDeserializer(Action<StaticDeserializerBuilder> configureBuilder)
     {
         Ensure.Arg.NotNull(configureBuilder);
@@ -82,10 +94,16 @@ public sealed class KubernetesYamlOptions
         return builder.Build();
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubernetesYamlOptions"/> class.
+    /// </summary>
     public KubernetesYamlOptions()
     {
         Defaults.PopulateValue(this);
     }
 
+    /// <summary>
+    /// Gets the <see cref="IList{T}"/> of <see cref="StaticContext"/>s.
+    /// </summary>
     public IList<StaticContext> Contexts { get; } = new List<StaticContext> { new KubernetesYamlSerializerContext() };
 }
