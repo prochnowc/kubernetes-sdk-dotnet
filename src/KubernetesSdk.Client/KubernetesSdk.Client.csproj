@@ -8,6 +8,10 @@
     <KubernetesGeneratorOptions>api</KubernetesGeneratorOptions>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="KubernetesSdk.Client.Tests" />
+  </ItemGroup>
+
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.props" />
   <Import Project="..\KubernetesSdk.Generator\build\KubernetesSdk.Generator.targets" />
 

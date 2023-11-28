@@ -16,4 +16,12 @@ internal static class ConcurrentRandom
             return Random.Next(minValue, maxValue);
         }
     }
+
+    public static double NextDouble()
+    {
+        lock (Random)
+        {
+            return Random.NextDouble();
+        }
+    }
 }

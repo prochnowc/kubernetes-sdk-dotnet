@@ -10,24 +10,23 @@ namespace Kubernetes.Client.LeaderElection;
 /// <summary>
 /// Provides a lock using a <see cref="V1Lease"/>.
 /// </summary>
-public sealed class LeaseLock : KubernetesResourceLock<V1Lease>
+public sealed class LeaseLock : KubernetesObjectLock<V1Lease>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LeaseLock"/> class.
     /// </summary>
-    /// <param name="client">The <see cref="KubernetesClient"/> used to communicate with the Kubernetes API server.</param>
     /// <param name="namespace">The namespace of the object.</param>
     /// <param name="name">The name of the object.</param>
     /// <param name="identity">The identity of the lock owner.</param>
-    public LeaseLock(KubernetesClient client, string @namespace, string name, string identity)
-        : base(client, @namespace, name, identity)
+    public LeaseLock(string @namespace, string name, string identity)
+        : base(@namespace, name, identity)
     {
     }
 
     /// <inheritdoc />
-    protected override LeaderElectionRecord GetLeaderElectionRecord(V1Lease obj)
+    protected override LeaderElectionRecord GetLeaderElectionRecord(KubernetesClient client, V1Lease obj)
     {
-        return new LeaderElectionRecord()
+        return new LeaderElectionRecord
         {
             AcquireTime = obj.Spec.AcquireTime,
             HolderIdentity = obj.Spec.HolderIdentity,
@@ -38,7 +37,7 @@ public sealed class LeaseLock : KubernetesResourceLock<V1Lease>
     }
 
     /// <inheritdoc />
-    protected override void SetLeaderElectionRecord(V1Lease obj, LeaderElectionRecord record)
+    protected override void SetLeaderElectionRecord(KubernetesClient client, V1Lease obj, LeaderElectionRecord record)
     {
         obj.Spec = new V1LeaseSpec()
         {
@@ -51,25 +50,31 @@ public sealed class LeaseLock : KubernetesResourceLock<V1Lease>
     }
 
     /// <inheritdoc />
-    protected override async Task<V1Lease> ReadObjectAsync(CancellationToken cancellationToken)
+    protected override async Task<V1Lease> ReadObjectAsync(KubernetesClient client, CancellationToken cancellationToken)
     {
-        return await Client.CoordinationV1()
+        return await client.CoordinationV1()
                            .ReadNamespacedLeaseAsync(Name, Namespace, cancellationToken: cancellationToken)
                            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    protected override async Task<V1Lease> CreateObjectAsync(V1Lease obj, CancellationToken cancellationToken)
+    protected override async Task<V1Lease> CreateObjectAsync(
+        KubernetesClient client,
+        V1Lease obj,
+        CancellationToken cancellationToken)
     {
-        return await Client.CoordinationV1()
+        return await client.CoordinationV1()
                            .CreateNamespacedLeaseAsync(Namespace, obj, cancellationToken: cancellationToken)
                            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    protected override async Task<V1Lease> ReplaceObjectAsync(V1Lease obj, CancellationToken cancellationToken)
+    protected override async Task<V1Lease> ReplaceObjectAsync(
+        KubernetesClient client,
+        V1Lease obj,
+        CancellationToken cancellationToken)
     {
-        return await Client.CoordinationV1()
+        return await client.CoordinationV1()
                            .ReplaceNamespacedLeaseAsync(Name, Namespace, obj, cancellationToken: cancellationToken)
                            .ConfigureAwait(false);
     }
