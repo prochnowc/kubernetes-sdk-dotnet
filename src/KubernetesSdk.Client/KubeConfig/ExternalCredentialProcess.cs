@@ -12,17 +12,29 @@ using Kubernetes.Serialization;
 
 namespace Kubernetes.Client.KubeConfig;
 
+/// <summary>
+/// Represents the process to obtain external credentials.
+/// </summary>
 public sealed class ExternalCredentialProcess
 {
     private readonly ExternalCredential _credential;
     private readonly IKubernetesSerializerFactory _serializerFactory;
     private readonly ProcessStartInfo _processStartInfo;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalCredentialProcess"/> class.
+    /// </summary>
+    /// <param name="credential">The <see cref="ExternalCredential"/> providing information about the external credential process.</param>
     public ExternalCredentialProcess(ExternalCredential credential)
         : this(credential, KubernetesSerializerFactory.Instance)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalCredentialProcess"/> class.
+    /// </summary>
+    /// <param name="credential">The <see cref="ExternalCredential"/> providing information about the external credential process.</param>
+    /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public ExternalCredentialProcess(ExternalCredential credential, IKubernetesSerializerFactory serializerFactory)
     {
         Ensure.Arg.NotNull(credential);
@@ -68,6 +80,11 @@ public sealed class ExternalCredentialProcess
         return process;
     }
 
+    /// <summary>
+    /// Executes the external credential process and returns the provided credentials.
+    /// </summary>
+    /// <param name="timeout">The timeout.</param>
+    /// <returns>The <see cref="ExecCredential"/>.</returns>
     public ExecCredential Execute(TimeSpan timeout)
     {
         List<string> errors = new ();
@@ -114,6 +131,12 @@ public sealed class ExternalCredentialProcess
         return ProcessResponse(string.Concat(output));
     }
 
+    /// <summary>
+    /// Executes the external credential process and returns the provided credentials.
+    /// </summary>
+    /// <param name="timeout">The timeout.</param>
+    /// <param name="cancellationToken">Optional cancellation token.</param>
+    /// <returns>The <see cref="ExecCredential"/>.</returns>
     public async Task<ExecCredential> ExecuteAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

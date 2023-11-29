@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Kubernetes.Client.Authentication;
@@ -11,14 +14,14 @@ namespace Kubernetes.Client;
 /// </summary>
 public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
 {
-    protected const string ServiceAccountTokenFileName = "token";
-    protected const string ServiceAccountRootCaFileName = "ca.crt";
-    protected const string ServiceAccountNamespaceFileName = "namespace";
+    private const string ServiceAccountTokenFileName = "token";
+    private const string ServiceAccountRootCaFileName = "ca.crt";
+    private const string ServiceAccountNamespaceFileName = "namespace";
 
-    protected const string ServiceHostEnvironmentVariableName = "KUBERNETES_SERVICE_HOST";
-    protected const string ServicePortEnvironmentVariableName = "KUBERNETES_SERVICE_PORT";
+    private const string ServiceHostEnvironmentVariableName = "KUBERNETES_SERVICE_HOST";
+    private const string ServicePortEnvironmentVariableName = "KUBERNETES_SERVICE_PORT";
 
-    protected static readonly string ServiceAccountPath =
+    private static readonly string ServiceAccountPath =
         Path.Combine(
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? "C:\\"
@@ -29,6 +32,10 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
             "kubernetes.io",
             "serviceaccount");
 
+    /// <summary>
+    /// Gets a value indicating whether the current process is running inside a Kubernetes cluster.
+    /// </summary>
+    /// <returns><c>true</c> if the current process is running inside a Kubernetes cluster; otherwise, <c>false</c>.</returns>
     public static bool IsInCluster()
     {
         string? host = Environment.GetEnvironmentVariable(ServiceHostEnvironmentVariableName);
@@ -48,6 +55,7 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
         return true;
     }
 
+    /// <inheritdoc />
     public KubernetesClientOptions CreateOptions()
     {
         var options = new KubernetesClientOptions();
@@ -55,6 +63,7 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
         return options;
     }
 
+    /// <inheritdoc />
     public virtual void BindOptions(KubernetesClientOptions options)
     {
         Ensure.Arg.NotNull(options);

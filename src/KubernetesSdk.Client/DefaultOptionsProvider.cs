@@ -1,14 +1,24 @@
+// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
 using System.Collections.Generic;
 using Kubernetes.Client.KubeConfig;
 using Kubernetes.Serialization;
 
 namespace Kubernetes.Client;
 
+/// <summary>
+/// Default options provider that populates <see cref="KubernetesClientOptions"/> from kubeconfig file
+/// or in-cluster.
+/// </summary>
 public class DefaultOptionsProvider : IKubernetesClientOptionsProvider
 {
     private readonly IEnumerable<IAuthProviderOptionsBinder> _authProviderOptionBinders;
     private readonly IKubernetesSerializerFactory _serializerFactory;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultOptionsProvider"/> class.
+    /// </summary>
     public DefaultOptionsProvider()
         : this(
             new IAuthProviderOptionsBinder[]
@@ -21,6 +31,11 @@ public class DefaultOptionsProvider : IKubernetesClientOptionsProvider
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultOptionsProvider"/> class.
+    /// </summary>
+    /// <param name="authProviderOptionBinders">The authentication provider option binders.</param>
+    /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public DefaultOptionsProvider(
         IEnumerable<IAuthProviderOptionsBinder> authProviderOptionBinders,
         IKubernetesSerializerFactory serializerFactory)
@@ -32,6 +47,7 @@ public class DefaultOptionsProvider : IKubernetesClientOptionsProvider
         _serializerFactory = serializerFactory;
     }
 
+    /// <inheritdoc />
     public KubernetesClientOptions CreateOptions()
     {
         var options = new KubernetesClientOptions();
@@ -39,6 +55,7 @@ public class DefaultOptionsProvider : IKubernetesClientOptionsProvider
         return options;
     }
 
+    /// <inheritdoc />
     public virtual void BindOptions(KubernetesClientOptions options)
     {
         Ensure.Arg.NotNull(options);

@@ -10,6 +10,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Kubernetes.Client.Http;
 
+/// <content>
+/// Legacy implementation of <see cref="KubernetesHttpClientFactory"/>.
+/// </content>
 public static partial class KubernetesHttpClientFactory
 {
     /// <summary>

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Christian Prochnow and Contributors. All rights reserved.
+// Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -39,6 +42,9 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
     /// </summary>
     public string? Context { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubeConfigOptionsProvider"/> class.
+    /// </summary>
     public KubeConfigOptionsProvider()
         : this(
             new IAuthProviderOptionsBinder[]
@@ -51,14 +57,23 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="KubeConfigOptionsProvider"/> class.
+    /// </summary>
+    /// <param name="authProviderOptionBinders">The authentication provider option binders.</param>
+    /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public KubeConfigOptionsProvider(
         IEnumerable<IAuthProviderOptionsBinder> authProviderOptionBinders,
         IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(authProviderOptionBinders);
+        Ensure.Arg.NotNull(serializerFactory);
+
         AuthProviderOptionBinders = authProviderOptionBinders;
         SerializerFactory = serializerFactory;
     }
 
+    /// <inheritdoc />
     public KubernetesClientOptions CreateOptions()
     {
         var options = new KubernetesClientOptions();
@@ -66,6 +81,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
         return options;
     }
 
+    /// <inheritdoc />
     public virtual void BindOptions(KubernetesClientOptions options)
     {
         string configPath = ConfigPath ?? KubeConfigLoader.GetKubeConfigPath();

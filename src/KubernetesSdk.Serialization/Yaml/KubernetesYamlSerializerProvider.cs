@@ -8,7 +8,7 @@ namespace Kubernetes.Serialization.Yaml;
 /// </summary>
 public sealed class KubernetesYamlSerializerProvider : IKubernetesSerializerProvider
 {
-    private readonly KubernetesYamlOptions _options;
+    private readonly KubernetesYamlOptions? _options;
 
     /// <inheritdoc />
     public string ContentType => "application/yaml";
@@ -19,12 +19,12 @@ public sealed class KubernetesYamlSerializerProvider : IKubernetesSerializerProv
     /// <param name="options">The <see cref="KubernetesYamlOptions"/>.</param>
     public KubernetesYamlSerializerProvider(KubernetesYamlOptions? options = null)
     {
-        _options = options ?? KubernetesYamlOptions.Default;
+        _options = options;
     }
 
     /// <inheritdoc />
     public IKubernetesSerializer CreateSerializer()
     {
-        return new KubernetesYamlSerializer(_options);
+        return new KubernetesYamlSerializer(_options ?? KubernetesYamlOptions.Default);
     }
 }

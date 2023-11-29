@@ -8,7 +8,7 @@ namespace Kubernetes.Serialization.Json;
 /// </summary>
 public sealed class KubernetesJsonSerializerProvider : IKubernetesSerializerProvider
 {
-    private readonly KubernetesJsonOptions _options;
+    private readonly KubernetesJsonOptions? _options;
 
     /// <inheritdoc />
     public string ContentType => "application/json";
@@ -19,12 +19,12 @@ public sealed class KubernetesJsonSerializerProvider : IKubernetesSerializerProv
     /// <param name="options">The <see cref="KubernetesJsonOptions"/>.</param>
     public KubernetesJsonSerializerProvider(KubernetesJsonOptions? options = null)
     {
-        _options = options ?? KubernetesJsonOptions.Default;
+        _options = options;
     }
 
     /// <inheritdoc />
     public IKubernetesSerializer CreateSerializer()
     {
-        return new KubernetesJsonSerializer(_options);
+        return new KubernetesJsonSerializer(_options ?? KubernetesJsonOptions.Default);
     }
 }
