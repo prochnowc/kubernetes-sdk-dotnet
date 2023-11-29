@@ -2,6 +2,7 @@
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ using FluentAssertions.Execution;
 using Kubernetes.Client.Mock;
 using Kubernetes.Models;
 using NSubstitute;
+
+#pragma warning disable VSTHRD103 // CancelAsync() Not available in .NET < 8.0
 
 namespace Kubernetes.Client.LeaderElection;
 
@@ -90,6 +93,7 @@ public class LeaderElectorTests
 
     private Task OnLeaderChangedTask => _leaderChangedTcs.Task;
 
+    [SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "Should work in this case.")]
     private async Task WaitWithTimeout(Task task, TimeSpan timeout)
     {
         Task result = await Task.WhenAny(task, Task.Delay(timeout));
