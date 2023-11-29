@@ -20,7 +20,7 @@ internal static class KubernetesEntityTypeCache
             {
                 var entityAttribute = t.GetCustomAttribute<KubernetesEntityAttribute>();
                 if (entityAttribute == null)
-                    throw new ArgumentException("Not a kubernetes entity.");
+                    throw new ArgumentException("Not a Kubernetes entity.");
 
                 string kind = entityAttribute.Kind;
                 string pluralName = string.IsNullOrWhiteSpace(entityAttribute.PluralName)

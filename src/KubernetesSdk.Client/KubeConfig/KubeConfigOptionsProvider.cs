@@ -106,8 +106,15 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
         }
     }
 
+    /// <summary>
+    /// Loads the config from the specified <paramref name="configPath"/>.
+    /// </summary>
+    /// <param name="configPath">The path to the kubeconfig file.</param>
+    /// <returns>The <see cref="V1Config"/>.</returns>
     protected virtual V1Config LoadConfig(string configPath)
     {
+        Ensure.Arg.NotEmpty(configPath);
+
         var configLoader = new KubeConfigLoader(SerializerFactory);
         return configLoader.Load(configPath);
     }
