@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Kubernetes.Client.Authentication;
 using Kubernetes.Models.KubeConfig;
@@ -164,7 +162,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
             throw new KubernetesConfigException($"Server not set for cluster '{clusterName}' in '{configPath}'");
         }
 
-        options.Host = ParseServerUri(cluster.ClusterEndpoint!.Server!, clusterName!, configPath);
+        options.Host = ParseServerUri(cluster.ClusterEndpoint.Server, clusterName, configPath);
         options.SkipTlsVerify = cluster.ClusterEndpoint.SkipTlsVerify;
         options.TlsServerName = cluster.ClusterEndpoint.TlsServerName;
 
@@ -172,20 +170,12 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
         {
             if (!string.IsNullOrEmpty(cluster.ClusterEndpoint.CertificateAuthorityData))
             {
-                // This null password is to change the constructor to fix this KB:
-                // https://support.microsoft.com/en-us/topic/kb5025823-change-in-how-net-applications-import-x-509-certificates-bf81c936-af2b-446e-9f7a-016f4713b46b
-                string? nullPassword = null;
-                string data = cluster.ClusterEndpoint.CertificateAuthorityData!;
-                var certificate = new X509Certificate2(Convert.FromBase64String(data), nullPassword);
-                options.CaCerts = new X509Certificate2Collection(certificate);
+                options.CertificateAuthorityData = cluster.ClusterEndpoint.CertificateAuthorityData;
             }
             else if (!string.IsNullOrEmpty(cluster.ClusterEndpoint.CertificateAuthority))
             {
-                var certificate = new X509Certificate2(
-                    GetFullPath(
-                        configPath,
-                        cluster.ClusterEndpoint.CertificateAuthority!));
-                options.CaCerts = new X509Certificate2Collection(certificate);
+                options.CertificateAuthorityFilePath =
+                    GetFullPath(configPath, cluster.ClusterEndpoint.CertificateAuthority);
             }
         }
     }
@@ -244,7 +234,7 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
             !string.IsNullOrWhiteSpace(user.UserCredentials.ClientKey))
         {
             options.ClientCertificateFilePath = GetFullPath(configPath, user.UserCredentials.ClientCertificate!);
-            options.ClientKeyFilePath = GetFullPath(configPath, user.UserCredentials.ClientKey!);
+            options.ClientCertificateKeyFilePath = GetFullPath(configPath, user.UserCredentials.ClientKey!);
             credentialsFound = true;
         }
 
@@ -301,7 +291,6 @@ public class KubeConfigOptionsProvider : IKubernetesClientOptionsProvider
 
             credentialsFound = true;
 
-            // TODO: support client certificates here too.
             options.TokenProvider = new ExternalCredentialTokenProvider(externalCredentialProcess, credential);
         }
 

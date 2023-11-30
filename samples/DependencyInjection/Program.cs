@@ -24,3 +24,5 @@ foreach (V1Namespace ns in namespaces.Items)
 {
     Console.WriteLine(ns.Metadata.Name);
 }
+
+host.Dispose();

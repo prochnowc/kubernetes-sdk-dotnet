@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
 using Kubernetes.Client.Authentication;
 using Kubernetes.Client.Http;
 using Polly.Retry;
@@ -14,19 +13,19 @@ using Polly.Retry;
 namespace Kubernetes.Client
 {
     /// <summary>
-    /// Represents a set of kubernetes client configuration settings.
+    /// Represents a set of Kubernetes client configuration settings.
     /// </summary>
     public class KubernetesClientOptions
     {
         private bool _isReadOnly;
         private string? _namespace;
         private string? _host;
-        private X509Certificate2Collection? _caCerts;
+        private string? _certificateAuthorityData;
+        private string? _certificateAuthorityFilePath;
         private string? _clientCertificateData;
         private string? _clientCertificateKeyData;
         private string? _clientCertificateFilePath;
-        private X509KeyStorageFlags? _clientCertificateKeyStoreFlags;
-        private string? _clientKeyFilePath;
+        private string? _clientCertificateKeyFilePath;
         private bool _skipTlsVerify;
         private string? _tlsServerName;
         private ProductInfoHeaderValue? _userAgent;
@@ -34,7 +33,7 @@ namespace Kubernetes.Client
         private string? _password;
         private string? _accessToken;
         private ITokenProvider? _tokenProvider;
-        private bool _disableHttp2 = false;
+        private bool _disableHttp2;
         private TimeSpan _httpClientTimeout = TimeSpan.FromSeconds(100);
         private AsyncRetryPolicy<HttpResponseMessage>? _httpClientRetryPolicy;
         private IList<Func<KubernetesClientOptions, DelegatingHandler>> _httpMessageHandlers =
@@ -70,20 +69,33 @@ namespace Kubernetes.Client
         }
 
         /// <summary>
-        /// Gets or sets the CA certificates.
+        /// Gets or sets the Base64 encoded certificate authority bundle.
         /// </summary>
-        public X509Certificate2Collection? CaCerts
+        public string? CertificateAuthorityData
         {
-            get => _caCerts;
+            get => _certificateAuthorityData;
             set
             {
                 EnsureWritable();
-                _caCerts = value;
+                _certificateAuthorityData = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the client certificate data.
+        /// Gets or sets the certificate authority bundle filename.
+        /// </summary>
+        public string? CertificateAuthorityFilePath
+        {
+            get => _certificateAuthorityFilePath;
+            set
+            {
+                EnsureWritable();
+                _certificateAuthorityFilePath = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Base64 encoded client certificate.
         /// </summary>
         public string? ClientCertificateData
         {
@@ -96,7 +108,7 @@ namespace Kubernetes.Client
         }
 
         /// <summary>
-        /// Gets or sets the client certificate key.
+        /// Gets or sets the Base64 encoded client certificate key.
         /// </summary>
         public string? ClientCertificateKeyData
         {
@@ -122,28 +134,15 @@ namespace Kubernetes.Client
         }
 
         /// <summary>
-        /// Gets or sets the ClientCertificate KeyStoreFlags to specify where and how to import the certificate private key.
-        /// </summary>
-        public X509KeyStorageFlags? ClientCertificateKeyStoreFlags
-        {
-            get => _clientCertificateKeyStoreFlags;
-            set
-            {
-                EnsureWritable();
-                _clientCertificateKeyStoreFlags = value;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the client certificate key filename.
         /// </summary>
-        public string? ClientKeyFilePath
+        public string? ClientCertificateKeyFilePath
         {
-            get => _clientKeyFilePath;
+            get => _clientCertificateKeyFilePath;
             set
             {
                 EnsureWritable();
-                _clientKeyFilePath = value;
+                _clientCertificateKeyFilePath = value;
             }
         }
 

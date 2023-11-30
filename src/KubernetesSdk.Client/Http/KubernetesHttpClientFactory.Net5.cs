@@ -39,26 +39,36 @@ public static partial class KubernetesHttpClientFactory
             EnableMultipleHttp2Connections = true,
         };
 
+        Action? disposeCallback = null;
+
         if (options.SkipTlsVerify)
         {
             result.SslOptions.RemoteCertificateValidationCallback = (_, _, _, _) => true;
         }
         else
         {
-            if (options.CaCerts != null)
+            X509Certificate2Collection? certificateAuthorities = CertificateLoader.TryLoadCertificateAuthorities(options);
+            if (certificateAuthorities != null)
             {
-                var validator = new RemoteCertificateValidator(options.CaCerts);
+                var validator = new RemoteCertificateValidator(certificateAuthorities);
                 result.SslOptions.RemoteCertificateValidationCallback = validator.CertificateValidationCallback;
+
+                disposeCallback += () =>
+                {
+                    foreach (X509Certificate2 certificate in certificateAuthorities)
+                    {
+                        certificate.Dispose();
+                    }
+                };
             }
         }
 
-        Action? disposeCallback = null;
-        X509Certificate2? clientCertificate = CertificateUtils.TryGetClientCertificate(options);
+        X509Certificate2? clientCertificate = CertificateLoader.TryLoadClientCertificate(options);
         if (clientCertificate != null)
         {
             result.SslOptions.ClientCertificates ??= new X509Certificate2Collection();
             result.SslOptions.ClientCertificates.Add(clientCertificate);
-            disposeCallback = () => clientCertificate.Dispose();
+            disposeCallback += () => clientCertificate.Dispose();
 
             // TODO this is workaround for net7.0, remove it when the issue is fixed
             // seems the client certificate is cached and cannot be updated

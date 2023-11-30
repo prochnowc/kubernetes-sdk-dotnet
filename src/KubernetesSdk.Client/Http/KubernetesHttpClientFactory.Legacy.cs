@@ -27,25 +27,35 @@ public static partial class KubernetesHttpClientFactory
     public static HttpMessageHandler CreatePrimaryMessageHandler(KubernetesClientOptions options)
     {
         var result = new HttpClientHandler();
+
+        Action? disposeCallback = null;
         if (options.SkipTlsVerify)
         {
             result.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
         }
         else
         {
-            if (options.CaCerts != null)
+            X509Certificate2Collection? certificateAuthorities = CertificateLoader.TryLoadCertificateAuthorities(options);
+            if (certificateAuthorities != null)
             {
-                var validator = new RemoteCertificateValidator(options.CaCerts);
+                var validator = new RemoteCertificateValidator(certificateAuthorities);
                 result.ServerCertificateCustomValidationCallback = validator.CertificateValidationCallback;
+
+                disposeCallback += () =>
+                {
+                    foreach (X509Certificate2 certificate in certificateAuthorities)
+                    {
+                        certificate.Dispose();
+                    }
+                };
             }
         }
 
-        Action? disposeCallback = null;
-        X509Certificate2? clientCertificate = CertificateUtils.TryGetClientCertificate(options);
+        X509Certificate2? clientCertificate = CertificateLoader.TryLoadClientCertificate(options);
         if (clientCertificate != null)
         {
             result.ClientCertificates.Add(clientCertificate);
-            disposeCallback = () => clientCertificate.Dispose();
+            disposeCallback += () => clientCertificate.Dispose();
         }
 
         return new HttpMessageHandlerWrapper(result, disposeCallback);

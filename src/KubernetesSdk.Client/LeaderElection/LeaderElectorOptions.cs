@@ -92,7 +92,7 @@ public class LeaderElectorOptions
     /// <summary>
     /// Validates the options.
     /// </summary>
-    public void Validate()
+    public virtual void Validate()
     {
         if (Lock == null)
         {
