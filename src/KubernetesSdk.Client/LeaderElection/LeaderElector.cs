@@ -14,7 +14,7 @@ namespace Kubernetes.Client.LeaderElection;
 /// <summary>
 /// Provides a leader election mechanism.
 /// </summary>
-public sealed class LeaderElector
+public class LeaderElector
 {
     private readonly KubernetesClient _client;
     private readonly LeaderElectorOptions _options;
@@ -81,7 +81,7 @@ public sealed class LeaderElector
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                bool acquired;
+                bool acquired = false;
                 do
                 {
                     double retryDelay = _options.RetryPeriod.TotalMilliseconds
@@ -90,11 +90,18 @@ public sealed class LeaderElector
                     await Task.Delay((int)retryDelay, cancellationToken)
                               .ConfigureAwait(false);
 
-                    acquired = await TryAcquireAsync(cancellationToken)
-                        .ConfigureAwait(false);
+                    try
+                    {
+                        acquired = await TryAcquireAsync(cancellationToken)
+                            .ConfigureAwait(false);
 
-                    await MaybeReportTransitionAsync()
-                        .ConfigureAwait(false);
+                        await MaybeReportTransitionAsync()
+                            .ConfigureAwait(false);
+                    }
+                    catch (KubernetesRequestException)
+                    {
+                        // ignore
+                    }
                 }
                 while (!acquired);
 
@@ -107,8 +114,15 @@ public sealed class LeaderElector
                     await Task.Delay(_options.RenewDeadline, cancellationToken)
                               .ConfigureAwait(false);
 
-                    renewed = await TryRenewAsync(cancellationToken)
-                        .ConfigureAwait(false);
+                    try
+                    {
+                        renewed = await TryRenewAsync(cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    catch (KubernetesRequestException)
+                    {
+                        renewed = false;
+                    }
                 }
                 while (renewed);
 
@@ -264,20 +278,40 @@ public sealed class LeaderElector
             .ConfigureAwait(false);
     }
 
-    private async Task OnLeaderChangedAsync(string leader)
+    /// <summary>
+    /// Invoked when the leader has changed.
+    /// </summary>
+    /// <param name="leader">The identity of the leader.</param>
+    /// <returns>Asynchronous task.</returns>
+    protected virtual async Task OnLeaderChangedAsync(string leader)
     {
-        IEnumerable<Delegate> handlers = LeaderChanged?.GetInvocationList() ?? Enumerable.Empty<Delegate>();
-        foreach (Delegate @delegate in handlers)
-        {
-            var handler = (Func<string, Task>)@delegate;
-            await handler(leader)
-                .ConfigureAwait(false);
-        }
+        await RaiseEventAsync(LeaderChanged, leader)
+            .ConfigureAwait(false);
     }
 
-    private async Task OnStartedLeadingAsync()
+    /// <summary>
+    /// Invoked when this instance becomes the leader.
+    /// </summary>
+    /// <returns>Asynchronous task.</returns>
+    protected virtual async Task OnStartedLeadingAsync()
     {
-        IEnumerable<Delegate> handlers = StartedLeading?.GetInvocationList() ?? Enumerable.Empty<Delegate>();
+        await RaiseEventAsync(StartedLeading)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Invoked when this instance stops being the leader.
+    /// </summary>
+    /// <returns>Asynchronous task.</returns>
+    protected virtual async Task OnStoppedLeadingAsync()
+    {
+        await RaiseEventAsync(StoppedLeading)
+            .ConfigureAwait(false);
+    }
+
+    private async Task RaiseEventAsync(Func<Task>? eventHandler)
+    {
+        IEnumerable<Delegate> handlers = eventHandler?.GetInvocationList() ?? Enumerable.Empty<Delegate>();
 
         foreach (Delegate @delegate in handlers)
         {
@@ -287,14 +321,14 @@ public sealed class LeaderElector
         }
     }
 
-    private async Task OnStoppedLeadingAsync()
+    private async Task RaiseEventAsync<T>(Func<T, Task>? eventHandler, T arg)
     {
-        IEnumerable<Delegate> handlers = StoppedLeading?.GetInvocationList() ?? Enumerable.Empty<Delegate>();
+        IEnumerable<Delegate> handlers = eventHandler?.GetInvocationList() ?? Enumerable.Empty<Delegate>();
 
         foreach (Delegate @delegate in handlers)
         {
-            var handler = (Func<Task>)@delegate;
-            await handler()
+            var handler = (Func<T, Task>)@delegate;
+            await handler(arg)
                 .ConfigureAwait(false);
         }
     }
