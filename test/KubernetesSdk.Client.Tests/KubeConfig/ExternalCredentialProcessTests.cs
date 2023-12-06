@@ -135,7 +135,7 @@ public class ExternalCredentialProcessTests
                 Arguments = GetArguments("empty"),
             });
 
-        await Assert.ThrowsAsync<AuthenticationException>(
+        await Assert.ThrowsAsync<KubernetesClientException>(
             async () => await process.ExecuteAsync(TimeSpan.FromSeconds(10)));
     }
 
@@ -150,7 +150,7 @@ public class ExternalCredentialProcessTests
                 Arguments = GetArguments("empty"),
             });
 
-        Assert.Throws<AuthenticationException>(
+        Assert.Throws<KubernetesClientException>(
             () => process.Execute(TimeSpan.FromSeconds(10)));
     }
 }

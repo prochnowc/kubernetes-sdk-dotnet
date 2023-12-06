@@ -12,6 +12,10 @@ internal sealed class ApiOperation
 
     public string Method { get; }
 
+    public GroupVersionKind? GroupVersionKind { get; }
+
+    public string? Action { get; }
+
     public IReadOnlyCollection<ApiOperationParameter> PathParameters { get; }
 
     public IReadOnlyCollection<ApiOperationParameter> QueryParameters { get; }
@@ -43,6 +47,8 @@ internal sealed class ApiOperation
         string name,
         string path,
         string method,
+        GroupVersionKind? groupVersionKind,
+        string? action,
         IReadOnlyCollection<ApiOperationParameter> pathParameters,
         IReadOnlyCollection<ApiOperationParameter> queryParameters,
         IReadOnlyCollection<string> consumes,
@@ -54,6 +60,8 @@ internal sealed class ApiOperation
         Name = name;
         Path = path;
         Method = method;
+        GroupVersionKind = groupVersionKind;
+        Action = action;
         PathParameters = pathParameters;
         QueryParameters = queryParameters;
         Consumes = consumes;

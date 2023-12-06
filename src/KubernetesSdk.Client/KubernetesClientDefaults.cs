@@ -2,6 +2,8 @@
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -11,19 +13,34 @@ using Polly.Retry;
 
 namespace Kubernetes.Client;
 
-internal static class KubernetesClientDefaults
+/// <summary>
+/// Provides default values used by the Kubernetes client.
+/// </summary>
+public static class KubernetesClientDefaults
 {
-    private static readonly Lazy<ProductInfoHeaderValue> LazyUserAgent = new (
-        () =>
-        {
-            var versionAttribute =
-                typeof(KubernetesClientDefaults).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            string? version = versionAttribute?.InformationalVersion;
-            return new ProductInfoHeaderValue("Kubernetes_NET_SDK", version);
-        });
+    /// <summary>
+    /// The name used for diagnostics (tracing and metrics).
+    /// </summary>
+    public const string DiagnosticsName = "KubernetesSdk.Client";
 
-    public static ProductInfoHeaderValue UserAgent => LazyUserAgent.Value;
+    internal static string? Version { get; }
+        = typeof(KubernetesClientDefaults)
+          .Assembly
+          .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+          .InformationalVersion;
 
+    internal static readonly Meter Meter = new (DiagnosticsName, Version);
+
+    internal static readonly ActivitySource ActivitySource = new (DiagnosticsName, Version);
+
+    /// <summary>
+    /// Gets the default user agent used by the Kubernetes client.
+    /// </summary>
+    public static ProductInfoHeaderValue UserAgent => new ("Kubernetes_NET_SDK", Version);
+
+    /// <summary>
+    /// Gets the default retry policy used by the Kubernetes client.
+    /// </summary>
     public static AsyncRetryPolicy<HttpResponseMessage> HttpClientRetryPolicy { get; } =
         HttpPolicyExtensions
             .HandleTransientHttpError()

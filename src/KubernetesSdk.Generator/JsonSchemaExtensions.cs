@@ -6,7 +6,8 @@ namespace Kubernetes.Generator;
 
 internal static class JsonSchemaExtensions
 {
-    private const string ExtensionDataKey = "x-kubernetes-group-version-kind";
+    private const string GroupVersionKindExtensionDataKey = "x-kubernetes-group-version-kind";
+    private const string ActionExtensionDataKey = "x-kubernetes-action";
     private const string GroupKey = "group";
     private const string VersionKey = "version";
     private const string KindKey = "kind";
@@ -14,7 +15,7 @@ internal static class JsonSchemaExtensions
     public static bool HasKubernetesGroupVersionKind(this IJsonExtensionObject schema)
     {
         Ensure.Arg.NotNull(schema);
-        return schema.ExtensionData?.ContainsKey(ExtensionDataKey) == true;
+        return schema.ExtensionData?.ContainsKey(GroupVersionKindExtensionDataKey) == true;
     }
 
     public static bool TryGetKubernetesGroupVersionKind(
@@ -23,7 +24,7 @@ internal static class JsonSchemaExtensions
     {
         Ensure.Arg.NotNull(schema);
 
-        if (schema.ExtensionData?.TryGetValue(ExtensionDataKey, out object? value) != true)
+        if (schema.ExtensionData?.TryGetValue(GroupVersionKindExtensionDataKey, out object? value) != true)
         {
             groupVersionKind = null;
             return false;
@@ -37,5 +38,21 @@ internal static class JsonSchemaExtensions
             (string)extensionDataDictionary[KindKey]);
 
         return true;
+    }
+
+    public static bool TryGetKubernetesAction(
+        this IJsonExtensionObject schema,
+        [NotNullWhen(true)] out string? action)
+    {
+        Ensure.Arg.NotNull(schema);
+
+        if (schema.ExtensionData?.TryGetValue(ActionExtensionDataKey, out object? value) != true)
+        {
+            action = null;
+            return false;
+        }
+
+        action = (string?)value;
+        return action != null;
     }
 }

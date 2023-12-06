@@ -59,23 +59,38 @@ public sealed partial class {{ operationsTypeName }} : KubernetesClientOperation
         {{~ for parameter in method.QueryParameters ~}}
             .AddQueryParameter("{{ parameter.Name }}", {{ parameter.ParameterName }})
         {{~ end ~}}
-        {{~ if (method.Name | string.starts_with "Watch") ~}}
+        {{~ if method.Action == "WATCH" ~}}
             .AddQueryParameter("watch", true)
         {{~ end ~}}
             .ToUri();
 
         var request = new KubernetesRequest(HttpMethods.{{ method.Method }}, requestUri);
+        request.Action = "{{ method.Action }}";
+        {{~ if method.GroupVersionKind ~}}
+        {{~ if (method.GroupVersionKind.Group | string.empty) ~}}
+        request.ApiVersion = "{{ method.GroupVersionKind.Version }}";
+        {{~ else ~}}
+        request.ApiVersion = "{{ method.GroupVersionKind.Group }}/{{ method.GroupVersionKind.Version }}";
+        {{~ end ~}}
+        request.Kind = "{{ method.GroupVersionKind.Kind }}";
+        {{~ else if Model.Name == "CustomObjects" }}
+        request.ApiVersion = string.IsNullOrEmpty(entityType.Group)
+            ? entityType.Version
+            : $"{entityType.Group}/{entityType.Version}";
+        request.Kind = entityType.Kind;
+        {{~ end ~}}
+
         {{~ if method.Body != null ~}}
         request.Content = {{ method.Body.ParameterName }};
         {{~ end ~}}
-        {{~ if (method.Name | string.starts_with "Watch") ~}}
+        {{~ if method.Action == "WATCH" ~}}
         request.Timeout = Timeout.InfiniteTimeSpan;
         {{~ end ~}}
 
         using var response = await Client.SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        {{ if (method.Name | string.starts_with "Watch") -}}
+        {{ if method.Action == "WATCH" -}}
         return await response.ReadAsWatcherAsync<{{ method.ResultType }}>(cancellationToken)
             .ConfigureAwait(false);
         {{- else if method.ResultType == "global::System.IO.Stream" -}}

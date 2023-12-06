@@ -55,7 +55,7 @@ internal sealed class ApiOperationsBuilder
 
     public IEnumerable<ApiOperations> GetOperations()
     {
-        Dictionary<string, List<OpenApiOperationDescription>>? operationsGroupedByTag =
+        Dictionary<string, List<OpenApiOperationDescription>> operationsGroupedByTag =
             GetOperationsGroupedByTag(_context.OpenApiDocument.Operations);
 
         foreach (KeyValuePair<string, List<OpenApiOperationDescription>> operationsGroup in operationsGroupedByTag)
@@ -94,6 +94,9 @@ internal sealed class ApiOperationsBuilder
                                                    .ToArray();
                 }
 
+                o.Operation.TryGetKubernetesGroupVersionKind(out GroupVersionKind? groupVersionKind);
+                o.Operation.TryGetKubernetesAction(out string? action);
+
                 if (methodName.StartsWith(ListMethodPrefix))
                 {
                     methods.Add(
@@ -101,6 +104,8 @@ internal sealed class ApiOperationsBuilder
                             methodName,
                             methodPath,
                             o.Method.ToPascalCase(),
+                            groupVersionKind,
+                            "LIST",
                             pathParameters,
                             queryParameters.Where(p => !ListParameterFilter.Contains(p.Name))
                                            .ToArray(),
@@ -140,6 +145,8 @@ internal sealed class ApiOperationsBuilder
                             WatchMethodPrefix + methodName.Substring(ListMethodPrefix.Length),
                             methodPath,
                             o.Method.ToPascalCase(),
+                            groupVersionKind,
+                            "WATCH",
                             pathParameters,
                             queryParameters.Where(p => !WatchParameterFilter.Contains(p.Name))
                                            .ToArray(),
@@ -156,6 +163,8 @@ internal sealed class ApiOperationsBuilder
                             methodName,
                             methodPath,
                             o.Method.ToPascalCase(),
+                            groupVersionKind,
+                            action?.ToUpperInvariant() ?? o.Method.ToUpperInvariant(),
                             pathParameters,
                             queryParameters,
                             o.Operation.ActualConsumes.ToArray(),

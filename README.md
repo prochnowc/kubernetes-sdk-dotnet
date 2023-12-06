@@ -12,6 +12,7 @@ Advantages over the official Kubernetes client for .NET:
 * Nullable annotations
 * Compatible with AOT
 * Seamless integration with `Microsoft.Extensions.DependencyInjection` and `Microsoft.Extensions.Http`
+* Supports .NET Tracing and Metrics including OpenTelemetry
 * Works with Windows containers
 
 ## The Kubernetes SDK for .NET

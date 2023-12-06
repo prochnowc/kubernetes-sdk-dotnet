@@ -114,7 +114,7 @@ public sealed class ExternalCredentialProcess
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException(
+            throw new KubernetesClientException(
                 $"Failed to start external process '{_processStartInfo.FileName}'",
                 error);
         }
@@ -165,7 +165,7 @@ public sealed class ExternalCredentialProcess
             }
             catch (Exception error)
             {
-                throw new InvalidOperationException(
+                throw new KubernetesClientException(
                     $"Failed to start external process '{_processStartInfo.FileName}'",
                     error);
             }
@@ -214,7 +214,7 @@ public sealed class ExternalCredentialProcess
         {
             response = serializer.Deserialize<ExecCredential>(output.AsSpan());
             if (response == null)
-                throw new ApplicationException("Received empty response");
+                throw new KubernetesClientException("Received empty response");
 
             if (!string.Equals(response.ApiVersion, _credential.ApiVersion))
             {
@@ -224,7 +224,7 @@ public sealed class ExternalCredentialProcess
         }
         catch (Exception error)
         {
-            throw new AuthenticationException(
+            throw new KubernetesClientException(
                 $"Failed to receive credentials from external process '{_processStartInfo.FileName}'",
                 error);
         }

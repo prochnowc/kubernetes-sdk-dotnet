@@ -4,9 +4,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Kubernetes.Client.Diagnostics;
 using Kubernetes.Client.Http;
 using Kubernetes.Client.Operations;
 using Kubernetes.Serialization;
@@ -23,6 +27,7 @@ public class KubernetesClient
     private readonly ConcurrentDictionary<Type, KubernetesClientOperations> _operations = new ();
     private readonly HttpClient _httpClient;
     private readonly IKubernetesSerializerFactory _serializerFactory;
+    private readonly KubernetesClientMetrics _metrics;
 
     /// <summary>
     /// Gets the <see cref="KubernetesClientOptions"/>.
@@ -75,6 +80,31 @@ public class KubernetesClient
         _options = options;
         _serializerFactory = serializerFactory;
         _httpClient = httpClientFactory(options);
+        _metrics = new KubernetesClientMetrics(_httpClient);
+    }
+
+    [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Passed by caller.")]
+    private Activity? StartActivity(
+        KubernetesRequest request,
+        [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null,
+        [CallerLineNumber] int lineNumber = 0)
+    {
+        return KubernetesClientDefaults.ActivitySource.StartActivity(
+            this,
+            $"K8s {request.Action ?? request.Method.ToString()}",
+            ActivityKind.Client,
+            () =>
+            {
+                TagList tags = request.GetRequestTags();
+                Uri? peer = _httpClient.BaseAddress;
+                tags.Add(OtelTags.NetPeerName, peer?.Host);
+                tags.Add(OtelTags.NetPeerPort, peer?.IsDefaultPort == true ? null : peer?.Port);
+                return tags;
+            },
+            memberName,
+            filePath,
+            lineNumber);
     }
 
     /// <summary>
@@ -94,7 +124,7 @@ public class KubernetesClient
         cts.CancelAfter(timeout);
         cancellationToken = cts.Token;
 
-        using HttpRequestMessage httpRequest = request.CreateHttpRequest(_options, _serializerFactory);
+        using Activity? activity = StartActivity(request);
 
         KubernetesResponse? response = null;
         try
@@ -102,26 +132,35 @@ public class KubernetesClient
             AsyncRetryPolicy<HttpResponseMessage> policy =
                 Options.HttpClientRetryPolicy ?? KubernetesClientDefaults.HttpClientRetryPolicy;
 
-            // ReSharper disable once AccessToDisposedClosure
-            HttpResponseMessage httpResponse =
-                await policy.ExecuteAsync(
-                                async ct =>
-                                    await _httpClient.SendAsync(
-                                                         httpRequest,
-                                                         HttpCompletionOption.ResponseHeadersRead,
-                                                         ct)
-                                                     .ConfigureAwait(false),
-                                cancellationToken)
-                            .ConfigureAwait(false);
+            using HttpRequestMessage httpRequest = request.CreateHttpRequest(_options, _serializerFactory);
 
-            response = new KubernetesResponse(httpResponse, _serializerFactory);
+            [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "Diposed after SendRequest returns.")]
+            async Task<HttpResponseMessage> SendRequest(CancellationToken ct)
+            {
+                return await _httpClient.SendAsync(
+                    httpRequest,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    ct);
+            }
+
+            using (KubernetesClientMetrics.TrackedRequest trackedRequest = _metrics.TrackRequest(request))
+            {
+                HttpResponseMessage httpResponse = await policy.ExecuteAsync(SendRequest, cancellationToken)
+                                                               .ConfigureAwait(false);
+
+                response = new KubernetesResponse(request, httpResponse, _serializerFactory);
+                trackedRequest.Complete(response);
+            }
+
             await response.EnsureSuccessStatusCodeAsync(cancellationToken)
                           .ConfigureAwait(false);
 
+            activity?.SetStatus(ActivityStatusCode.Ok);
             return response;
         }
-        catch
+        catch (Exception error)
         {
+            activity?.SetStatus(ActivityStatusCode.Error, error.Message);
             response?.Dispose();
             throw;
         }

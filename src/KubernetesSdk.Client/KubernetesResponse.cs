@@ -2,11 +2,13 @@
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Kubernetes.Client.Diagnostics;
 using Kubernetes.Models;
 using Kubernetes.Serialization;
 
@@ -20,21 +22,60 @@ public sealed partial class KubernetesResponse : IDisposable
     private const string ContentType = "application/json";
 
     private readonly IKubernetesSerializerFactory _serializerFactory;
+    private readonly KubernetesRequest _request;
     private HttpResponseMessage? _response;
     private int _disposed;
 
     /// <summary>
+    /// Gets the <see cref="KubernetesRequest"/>.
+    /// </summary>
+    public KubernetesRequest Request
+    {
+        get
+        {
+            EnsureNotDisposed();
+            return _request;
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the response is a success.
+    /// </summary>
+    public bool IsSuccessStatusCode
+    {
+        get
+        {
+            EnsureNotDisposed();
+            return _response.IsSuccessStatusCode;
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="KubernetesResponse"/> class.
     /// </summary>
+    /// <param name="request">The <see cref="KubernetesRequest"/>.</param>
     /// <param name="response">The <see cref="HttpResponseMessage"/>.</param>
     /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
-    public KubernetesResponse(HttpResponseMessage response, IKubernetesSerializerFactory serializerFactory)
+    public KubernetesResponse(
+        KubernetesRequest request,
+        HttpResponseMessage response,
+        IKubernetesSerializerFactory serializerFactory)
     {
+        Ensure.Arg.NotNull(request);
         Ensure.Arg.NotNull(response);
         Ensure.Arg.NotNull(serializerFactory);
 
+        _request = request;
         _response = response;
         _serializerFactory = serializerFactory;
+    }
+
+    internal TagList GetResponseTags()
+    {
+        EnsureNotDisposed();
+        TagList tags = _request.GetRequestTags();
+        tags.Add(OtelTags.KubernetesStatusCode, IsSuccessStatusCode ? "OK" : "ERROR");
+        return tags;
     }
 
     /// <summary>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;netstandard2.0;net6.0</TargetFrameworks>
+    <RootNamespace>Kubernetes.Client.OpenTelemetry</RootNamespace>
+    <Description>Integrates the client library with OpenTelemetry.</Description>
+    <PackageTags>$(PackageTags);Client;OpenTelemetry</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KubernetesSdk.Client\KubernetesSdk.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Api" Version="1.6.0" />
+  </ItemGroup>
+
+</Project>

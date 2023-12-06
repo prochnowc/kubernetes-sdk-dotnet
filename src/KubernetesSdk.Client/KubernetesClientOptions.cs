@@ -28,14 +28,17 @@ namespace Kubernetes.Client
         private string? _clientCertificateKeyFilePath;
         private bool _skipTlsVerify;
         private string? _tlsServerName;
-        private ProductInfoHeaderValue? _userAgent;
+        private ProductInfoHeaderValue? _userAgent = KubernetesClientDefaults.UserAgent;
         private string? _username;
         private string? _password;
         private string? _accessToken;
         private ITokenProvider? _tokenProvider;
         private bool _disableHttp2;
         private TimeSpan _httpClientTimeout = TimeSpan.FromSeconds(100);
-        private AsyncRetryPolicy<HttpResponseMessage>? _httpClientRetryPolicy;
+
+        private AsyncRetryPolicy<HttpResponseMessage>? _httpClientRetryPolicy =
+            KubernetesClientDefaults.HttpClientRetryPolicy;
+
         private IList<Func<KubernetesClientOptions, DelegatingHandler>> _httpMessageHandlers =
             new List<Func<KubernetesClientOptions, DelegatingHandler>>
             {
