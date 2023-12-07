@@ -27,6 +27,14 @@ public sealed class OidcTokenProvider : TokenProviderBase
     private readonly string? _clientSecret;
     private string _refreshToken;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OidcTokenProvider"/> class.
+    /// </summary>
+    /// <param name="issuerUrl">The token issuer URL.</param>
+    /// <param name="clientId">The client ID.</param>
+    /// <param name="clientSecret">The client secret.</param>
+    /// <param name="idToken">The ID token.</param>
+    /// <param name="refreshToken">The refresh token.</param>
     public OidcTokenProvider(
         string issuerUrl,
         string clientId,
