@@ -15,21 +15,20 @@ using Kubernetes.Serialization;
 namespace Kubernetes.Client.Authentication;
 
 /// <summary>
-/// Provides a bearer token from an external credential process.
+/// Provides a access token from an external credential process.
 /// </summary>
-public sealed class ExternalCredentialTokenProvider : ITokenProvider
+public sealed class ExternalCredentialTokenProvider : TokenProviderBase
 {
     private const string TokenTypeTag = "external_credential";
 
     private readonly TokenProviderMetrics _metrics;
     private readonly ExternalCredentialProcess _process;
-    private ExecCredential? _credential;
 
     internal ExternalCredentialTokenProvider(ExternalCredentialProcess process, ExecCredential credential)
+        : base(credential.Status?.Token, credential.Status?.ExpirationTimestamp)
     {
         _metrics = new TokenProviderMetrics(TokenTypeTag);
         _process = process;
-        _credential = credential;
     }
 
     /// <summary>
@@ -38,6 +37,7 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
     /// <param name="credential">The external credential.</param>
     /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public ExternalCredentialTokenProvider(ExternalCredential credential, IKubernetesSerializerFactory serializerFactory)
+        : base(null, null)
     {
         Ensure.Arg.NotNull(credential);
         Ensure.Arg.NotNull(serializerFactory);
@@ -54,7 +54,7 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
     {
         return KubernetesClientDefaults.ActivitySource.StartActivity(
             this,
-            "GetExternalCredentialToken",
+            "RefreshExternalCredentialToken",
             ActivityKind.Internal,
             () =>
             {
@@ -67,57 +67,37 @@ public sealed class ExternalCredentialTokenProvider : ITokenProvider
             lineNumber);
     }
 
-    private bool NeedsRefresh()
-    {
-        if (_credential?.Status == null)
-            return true;
-
-        if (_credential.Status.ExpirationTimestamp == null)
-            return false;
-
-        return DateTime.UtcNow.AddSeconds(30) > _credential.Status.ExpirationTimestamp;
-    }
-
     /// <inheritdoc />
-    public async Task<string> GetTokenAsync(bool forceRefresh, CancellationToken cancellationToken)
+    protected override async Task<(string token, DateTimeOffset? expires)> RefreshTokenAsync(
+        CancellationToken cancellationToken)
     {
-        if (forceRefresh || NeedsRefresh())
+        using Activity? activity = StartActivity();
+
+        try
         {
-            using Activity? activity = StartActivity();
+            using TokenProviderMetrics.TrackedRequest trackedRequest = _metrics.TrackRequest();
 
-            try
+            ExecCredential credential =
+                await _process.ExecuteAsync(TimeSpan.FromMinutes(2), cancellationToken)
+                              .ConfigureAwait(false);
+
+            trackedRequest.Complete();
+
+            if (credential.Status?.IsValid() != true)
             {
-                using TokenProviderMetrics.TrackedRequest trackedRequest = _metrics.TrackRequest();
-
-                bool result = await RefreshTokenAsync(cancellationToken)
-                    .ConfigureAwait(false);
-
-                trackedRequest.Complete();
-
-                if (!result)
-                {
-                    throw new KubernetesRequestException(
-                        "Received bad response from external command to receive credentials");
-                }
-
-                activity?.SetTag(OtelTags.TokenExpiresAt, _credential?.Status?.ExpirationTimestamp?.ToString("O"));
-                activity?.SetStatus(ActivityStatusCode.Ok);
+                throw new KubernetesRequestException(
+                    "Received bad response from external command to receive credentials");
             }
-            catch (Exception error)
-            {
-                activity?.SetStatus(ActivityStatusCode.Error, error.Message);
-                throw;
-            }
+
+            activity?.SetTag(OtelTags.TokenExpiresAt, credential.Status?.ExpirationTimestamp?.ToString("O"));
+            activity?.SetStatus(ActivityStatusCode.Ok);
+
+            return (credential.Status!.Token!, credential.Status.ExpirationTimestamp);
         }
-
-        return _credential!.Status!.Token!; // already validated
-    }
-
-    private async Task<bool> RefreshTokenAsync(CancellationToken cancellationToken)
-    {
-        _credential = await _process.ExecuteAsync(TimeSpan.FromMinutes(2), cancellationToken)
-                                    .ConfigureAwait(false);
-
-        return _credential.Status?.IsValid() ?? false;
+        catch (Exception error)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, error.Message);
+            throw;
+        }
     }
 }

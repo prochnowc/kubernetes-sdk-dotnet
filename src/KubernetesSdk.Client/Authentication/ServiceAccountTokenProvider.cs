@@ -10,91 +10,83 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kubernetes.Client.Diagnostics;
 
-namespace Kubernetes.Client.Authentication
+namespace Kubernetes.Client.Authentication;
+
+/// <summary>
+/// Provides a access token from a service account token file.
+/// </summary>
+public sealed class ServiceAccountTokenProvider : TokenProviderBase
 {
+    private const string TokenTypeTag = "service_account";
+
+    private readonly TokenProviderMetrics _metrics;
+    private readonly string _tokenFilePath;
+
     /// <summary>
-    /// Provides bearer authentication tokens from a service account token file.
+    /// Initializes a new instance of the <see cref="ServiceAccountTokenProvider"/> class.
     /// </summary>
-    public sealed class ServiceAccountTokenProvider : ITokenProvider
+    /// <param name="tokenFilePath">The path to the service account token file.</param>
+    public ServiceAccountTokenProvider(string tokenFilePath)
+        : base(null, null)
     {
-        private const string TokenTypeTag = "service_account";
+        Ensure.Arg.NotEmpty(tokenFilePath);
 
-        private readonly TokenProviderMetrics _metrics;
-        private readonly string _tokenFilePath;
-        private string? _token;
-        private DateTime _tokenExpiresAt;
+        _metrics = new TokenProviderMetrics(TokenTypeTag);
+        _tokenFilePath = tokenFilePath;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceAccountTokenProvider"/> class.
-        /// </summary>
-        /// <param name="tokenFilePath">The path to the service account token file.</param>
-        public ServiceAccountTokenProvider(string tokenFilePath)
-        {
-            Ensure.Arg.NotEmpty(tokenFilePath);
-
-            _metrics = new TokenProviderMetrics(TokenTypeTag);
-            _tokenFilePath = tokenFilePath;
-        }
-
-        private async Task<string> ReadTokenAsync()
-        {
-            using var reader = new StreamReader(File.OpenRead(_tokenFilePath));
-            return (await reader.ReadToEndAsync()
-                                .ConfigureAwait(false)).Trim();
-        }
-
-        [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Passed by caller.")]
-        private Activity? StartActivity(
-            [CallerMemberName] string? memberName = null,
-            [CallerFilePath] string? filePath = null,
-            [CallerLineNumber] int lineNumber = 0)
-        {
-            return KubernetesClientDefaults.ActivitySource.StartActivity(
-                this,
-                "GetServiceAccountToken",
-                ActivityKind.Internal,
-                () =>
-                {
-                    TagList tags = default;
-                    tags.Add(OtelTags.TokenType, TokenTypeTag);
-                    return tags;
-                },
-                memberName,
-                filePath,
-                lineNumber);
-        }
-
-        /// <inheritdoc />
-        public async Task<string> GetTokenAsync(bool forceRefresh, CancellationToken cancellationToken)
-        {
-            if (forceRefresh || _tokenExpiresAt < DateTime.UtcNow)
+    [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Passed by caller.")]
+    private Activity? StartActivity(
+        [CallerMemberName] string? memberName = null,
+        [CallerFilePath] string? filePath = null,
+        [CallerLineNumber] int lineNumber = 0)
+    {
+        return KubernetesClientDefaults.ActivitySource.StartActivity(
+            this,
+            "RefreshServiceAccountToken",
+            ActivityKind.Internal,
+            () =>
             {
-                using Activity? activity = StartActivity();
+                TagList tags = default;
+                tags.Add(OtelTags.TokenType, TokenTypeTag);
+                return tags;
+            },
+            memberName,
+            filePath,
+            lineNumber);
+    }
 
-                try
-                {
-                    using TokenProviderMetrics.TrackedRequest trackedRequest = _metrics.TrackRequest();
+    /// <inheritdoc />
+    protected override async Task<(string token, DateTimeOffset? expires)> RefreshTokenAsync(
+        CancellationToken cancellationToken)
+    {
+        using Activity? activity = StartActivity();
 
-                    _token = await ReadTokenAsync()
-                        .ConfigureAwait(false);
+        try
+        {
+            using TokenProviderMetrics.TrackedRequest trackedRequest = _metrics.TrackRequest();
 
-                    // in fact, the token has a expiry of 10 minutes and kubelet
-                    // refreshes it at 8 minutes of its lifetime.
-                    _tokenExpiresAt = DateTime.UtcNow.AddMinutes(9);
+            using var reader = new StreamReader(File.OpenRead(_tokenFilePath));
+            string token = await reader.ReadToEndAsync()
+                                       .ConfigureAwait(false);
 
-                    trackedRequest.Complete();
+            trackedRequest.Complete();
 
-                    activity?.SetTag(OtelTags.TokenExpiresAt, _tokenExpiresAt.ToString("O"));
-                    activity?.SetStatus(ActivityStatusCode.Ok);
-                }
-                catch (Exception error)
-                {
-                    activity?.SetStatus(ActivityStatusCode.Error, error.Message);
-                    throw;
-                }
-            }
+            token = token.Trim();
 
-            return _token!;
+            // in fact, the token has a expiry of 10 minutes and kubelet
+            // refreshes it at 8 minutes of its lifetime.
+            DateTimeOffset tokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(8);
+
+            activity?.SetTag(OtelTags.TokenExpiresAt, tokenExpiresAt.ToString("O"));
+            activity?.SetStatus(ActivityStatusCode.Ok);
+
+            return (token, tokenExpiresAt);
+        }
+        catch (Exception error)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, error.Message);
+            throw;
         }
     }
 }

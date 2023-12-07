@@ -2,6 +2,7 @@
 // Licensed under the Apache-2.0 license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
+using Kubernetes.Client.Authentication;
 using Kubernetes.Models.KubeConfig;
 
 namespace Kubernetes.Client.KubeConfig;
@@ -26,8 +27,7 @@ public sealed class OidcAuthProviderOptionsBinder : IAuthProviderOptionsBinder
             && config.TryGetValue("refresh-token", out string? refreshToken))
         {
             config.TryGetValue("client-secret", out string? clientSecret);
-
-            // TODO: options.TokenProvider = new OidcTokenProvider(clientId, clientSecret, idpIssuerUrl, idToken, refreshToken);
+            options.TokenProvider = new OidcTokenProvider(idpIssuerUrl, clientId, clientSecret, idToken, refreshToken);
         }
     }
 }
