@@ -68,7 +68,7 @@ public sealed class KubeConfigLoader
     public async Task<V1Config> LoadAsync(string? path = null, CancellationToken cancellationToken = default)
     {
         path ??= GetKubeConfigPath();
-        using FileStream stream = File.OpenRead(path);
+        using Stream stream = FileSystem.OpenRead(path, true);
         return await LoadAsync(stream, cancellationToken)
             .ConfigureAwait(false);
     }
@@ -84,7 +84,7 @@ public sealed class KubeConfigLoader
     public V1Config Load(string? path = null)
     {
         path ??= GetKubeConfigPath();
-        using FileStream stream = File.OpenRead(path);
+        using Stream stream = FileSystem.OpenRead(path);
         return Load(stream);
     }
 

@@ -28,7 +28,7 @@ internal static partial class CertificateLoader
     /// <returns>List of X509 Certificates.</returns>
     public static X509Certificate2Collection LoadCertificateBundleFile(string path)
     {
-        return LoadCertificateBundle(File.ReadAllBytes(path));
+        return LoadCertificateBundle(FileSystem.ReadAllBytes(path));
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ internal static partial class CertificateLoader
     /// <returns>X509 Client certificate.</returns>
     public static X509Certificate2 LoadClientCertificateFile(string certPath, string keyPath)
     {
-        return LoadClientCertificate(File.ReadAllBytes(certPath), File.ReadAllBytes(keyPath));
+        return LoadClientCertificate(FileSystem.ReadAllBytes(certPath), FileSystem.ReadAllBytes(keyPath));
     }
 
     /// <summary>

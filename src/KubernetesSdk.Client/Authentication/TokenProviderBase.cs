@@ -32,7 +32,7 @@ public abstract class TokenProviderBase : ITokenProvider
     {
         return string.IsNullOrEmpty(_token)
                || (_tokenExpiresAt != null
-                   && _tokenExpiresAt - TokenRefreshOffset < DateTimeOffset.UtcNow);
+                   && _tokenExpiresAt - TokenRefreshOffset < TimeProvider.UtcNow);
     }
 
     /// <summary>

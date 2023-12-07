@@ -45,11 +45,11 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
             return false;
 
         string tokenPath = Path.Combine(ServiceAccountPath, ServiceAccountTokenFileName);
-        if (!File.Exists(tokenPath))
+        if (!FileSystem.FileExists(tokenPath))
             return false;
 
         string rootCaPath = Path.Combine(ServiceAccountPath, ServiceAccountRootCaFileName);
-        if (!File.Exists(rootCaPath))
+        if (!FileSystem.FileExists(rootCaPath))
             return false;
 
         return true;
@@ -85,9 +85,9 @@ public class InClusterOptionsProvider : IKubernetesClientOptionsProvider
         options.CertificateAuthorityFilePath = rootCaPath;
 
         string namespaceFile = Path.Combine(ServiceAccountPath, ServiceAccountNamespaceFileName);
-        if (File.Exists(namespaceFile))
+        if (!FileSystem.FileExists(namespaceFile))
         {
-            options.Namespace = File.ReadAllText(namespaceFile);
+            options.Namespace = FileSystem.ReadAllText(namespaceFile);
         }
     }
 }

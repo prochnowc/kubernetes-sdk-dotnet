@@ -25,7 +25,7 @@ public sealed class AzureAuthProviderOptionsBinder : IAuthProviderOptionsBinder
             DateTimeOffset expires =
                 DateTimeOffset.FromUnixTimeSeconds(int.Parse(expiresOn, CultureInfo.InvariantCulture));
 
-            if (expires <= DateTimeOffset.UtcNow)
+            if (expires <= TimeProvider.UtcNow)
             {
                 string tenantId = config["tenant-id"];
                 string clientId = config["client-id"];

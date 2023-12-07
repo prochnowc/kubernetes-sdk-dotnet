@@ -164,7 +164,7 @@ public class LeaderElector
             }
         }
 
-        DateTimeOffset currentTime = _options.TimeProvider();
+        DateTimeOffset currentTime = TimeProvider.UtcNow;
 
         if (leaderElectionRecord?.AcquireTime == null
             || leaderElectionRecord.RenewTime == null
@@ -189,7 +189,7 @@ public class LeaderElector
             return false;
         }
 
-        currentTime = _options.TimeProvider();
+        currentTime = TimeProvider.UtcNow;
 
         if (!CompareLeaderElectionRecord(_observedRecord, leaderElectionRecord))
         {
@@ -231,7 +231,7 @@ public class LeaderElector
             return false;
         }
 
-        leaderElectionRecord.RenewTime = _options.TimeProvider().UtcDateTime;
+        leaderElectionRecord.RenewTime = TimeProvider.UtcNow.UtcDateTime;
 
         if (!await Lock.UpdateAsync(_client, leaderElectionRecord, cancellationToken)
                        .ConfigureAwait(false))

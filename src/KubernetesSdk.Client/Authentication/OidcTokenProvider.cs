@@ -118,7 +118,7 @@ public sealed class OidcTokenProvider : TokenProviderBase
             string token = tokenResponse.IdentityToken!;
             DateTimeOffset? tokenExpiresAt = tokenResponse.ExpiresIn <= 0
                 ? null
-                : DateTimeOffset.UtcNow + TimeSpan.FromSeconds(tokenResponse.ExpiresIn);
+                : TimeProvider.UtcNow + TimeSpan.FromSeconds(tokenResponse.ExpiresIn);
 
             activity?.SetTag(OtelTags.TokenExpiresAt, tokenExpiresAt?.ToString("O"));
             activity?.SetStatus(ActivityStatusCode.Ok);

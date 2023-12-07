@@ -134,12 +134,12 @@ public class LeaderElectorTests
         string identity = "my-identity";
         var @lock = new TestLock(identity);
 
-        DateTimeOffset currentTime = DateTimeOffset.UtcNow;
+        var timeProvider = new TestTimeProvider();
+        TimeProvider.Instance = timeProvider;
 
         var options = new LeaderElectorOptions
         {
             Lock = @lock,
-            TimeProvider = () => currentTime,
         };
 
         LeaderElector elector = CreateElector(Client, options);
@@ -170,10 +170,10 @@ public class LeaderElectorTests
                  .Be(identity);
 
             @lock.Record.AcquireTime.Should()
-                 .Be(currentTime.UtcDateTime);
+                 .Be(TimeProvider.UtcNow.UtcDateTime);
 
             @lock.Record.RenewTime.Should()
-                 .Be(currentTime.UtcDateTime);
+                 .Be(TimeProvider.UtcNow.UtcDateTime);
 
             @lock.Record.LeaseDurationSeconds.Should()
                  .Be((int)options.LeaseDuration.TotalSeconds);
@@ -198,14 +198,14 @@ public class LeaderElectorTests
         string identity = "my-identity";
         var @lock = new TestLock(identity);
 
-        DateTimeOffset currentTime = DateTimeOffset.UtcNow;
-        DateTimeOffset initialTime = currentTime;
+        var timeProvider = new TestTimeProvider();
+        TimeProvider.Instance = timeProvider;
+        DateTimeOffset initialTime = timeProvider.UtcNow;
 
         var options = new LeaderElectorOptions
         {
             Lock = @lock,
             RenewDeadline = TimeSpan.FromSeconds(2),
-            TimeProvider = () => currentTime,
         };
 
         LeaderElector elector = CreateElector(Client, options);
@@ -215,7 +215,8 @@ public class LeaderElectorTests
 
         await WaitWithTimeout(OnStartedLeadingTask, options.RetryPeriod + TimeSpan.FromSeconds(3));
 
-        currentTime += options.LeaseDuration;
+        DateTimeOffset currentTime = initialTime + TimeSpan.FromSeconds(60);
+        timeProvider.UtcNow = currentTime;
 
         await Task.Delay(options.RenewDeadline + TimeSpan.FromSeconds(3));
 
@@ -256,7 +257,10 @@ public class LeaderElectorTests
     [Fact]
     public async Task KeepsForeignLock()
     {
-        DateTimeOffset currentTime = DateTimeOffset.UtcNow;
+        var timeProvider = new TestTimeProvider();
+        TimeProvider.Instance = timeProvider;
+        DateTimeOffset currentTime = timeProvider.UtcNow;
+
         string identity = "my-identity";
         string foreignIdentity = "foreign-identity";
 
@@ -277,7 +281,6 @@ public class LeaderElectorTests
         var options = new LeaderElectorOptions
         {
             Lock = @lock,
-            TimeProvider = () => currentTime,
         };
 
         LeaderElector elector = CreateElector(Client, options);
@@ -315,7 +318,10 @@ public class LeaderElectorTests
     [Fact]
     public async Task AcquiresForeignLock()
     {
-        DateTimeOffset currentTime = DateTimeOffset.UtcNow;
+        var timeProvider = new TestTimeProvider();
+        TimeProvider.Instance = timeProvider;
+        DateTimeOffset currentTime = timeProvider.UtcNow;
+
         string identity = "my-identity";
         string foreignIdentity = "foreign-identity";
 
@@ -338,7 +344,6 @@ public class LeaderElectorTests
         var options = new LeaderElectorOptions
         {
             Lock = @lock,
-            TimeProvider = () => currentTime,
         };
 
         LeaderElector elector = CreateElector(Client, options);

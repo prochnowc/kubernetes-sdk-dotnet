@@ -15,7 +15,6 @@ public class LeaderElectorOptions
     private TimeSpan _leaseDuration = TimeSpan.FromSeconds(15);
     private TimeSpan _renewDeadline = TimeSpan.FromSeconds(10);
     private TimeSpan _retryPeriod = TimeSpan.FromSeconds(2);
-    private Func<DateTimeOffset> _timeProvider = () => DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets or sets the <see cref="ILock"/> used by the <see cref="LeaderElector"/>.
@@ -73,19 +72,6 @@ public class LeaderElectorOptions
         {
             EnsureWritable();
             _retryPeriod = value;
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets a delegate to get the current date time in UTC. Used for testing.
-    /// </summary>
-    internal Func<DateTimeOffset> TimeProvider
-    {
-        get => _timeProvider;
-        set
-        {
-            EnsureWritable();
-            _timeProvider = value;
         }
     }
 

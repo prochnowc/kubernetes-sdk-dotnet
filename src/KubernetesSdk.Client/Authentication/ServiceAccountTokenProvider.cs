@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +17,10 @@ namespace Kubernetes.Client.Authentication;
 public sealed class ServiceAccountTokenProvider : TokenProviderBase
 {
     private const string TokenTypeTag = "service_account";
+
+    // in fact, the token has a expiry of 10 minutes and kubelet
+    // refreshes it at 8 minutes of its lifetime.
+    internal static readonly TimeSpan TokenLifetime = TimeSpan.FromMinutes(8);
 
     private readonly TokenProviderMetrics _metrics;
     private readonly string _tokenFilePath;
@@ -66,17 +69,13 @@ public sealed class ServiceAccountTokenProvider : TokenProviderBase
         {
             using TokenProviderMetrics.TrackedRequest trackedRequest = _metrics.TrackRequest();
 
-            using var reader = new StreamReader(File.OpenRead(_tokenFilePath));
-            string token = await reader.ReadToEndAsync()
-                                       .ConfigureAwait(false);
+            string token = await FileSystem.ReadAllTextAsync(_tokenFilePath, cancellationToken)
+                                           .ConfigureAwait(false);
 
             trackedRequest.Complete();
 
             token = token.Trim();
-
-            // in fact, the token has a expiry of 10 minutes and kubelet
-            // refreshes it at 8 minutes of its lifetime.
-            DateTimeOffset tokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(8);
+            DateTimeOffset tokenExpiresAt = TimeProvider.UtcNow + TokenLifetime;
 
             activity?.SetTag(OtelTags.TokenExpiresAt, tokenExpiresAt.ToString("O"));
             activity?.SetStatus(ActivityStatusCode.Ok);

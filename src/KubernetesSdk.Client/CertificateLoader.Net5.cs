@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -25,7 +24,7 @@ internal static partial class CertificateLoader
     public static X509Certificate2Collection LoadCertificateBundleFile(string path)
     {
         var certCollection = new X509Certificate2Collection();
-        certCollection.ImportFromPemFile(path);
+        certCollection.ImportFromPem(Encoding.UTF8.GetString(FileSystem.ReadAllBytes(path)));
         return certCollection;
     }
 
@@ -75,7 +74,7 @@ internal static partial class CertificateLoader
     /// <returns>X509 Client certificate.</returns>
     public static X509Certificate2 LoadClientCertificateFile(string certPath, string keyPath)
     {
-        var cert = X509Certificate2.CreateFromPem(File.ReadAllText(certPath), File.ReadAllText(keyPath));
+        var cert = X509Certificate2.CreateFromPem(FileSystem.ReadAllText(certPath), FileSystem.ReadAllText(keyPath));
         return FixCertificate(cert);
     }
 
