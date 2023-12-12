@@ -21,11 +21,14 @@ namespace Kubernetes.Client;
 /// <summary>
 /// Represents the Kubernetes API client.
 /// </summary>
-public class KubernetesClient
+public class KubernetesClient : IDisposable
 {
     private readonly KubernetesClientOptions _options;
     private readonly ConcurrentDictionary<Type, KubernetesClientOperations> _operations = new ();
+#pragma warning disable IDISP008
     private readonly HttpClient _httpClient;
+#pragma warning restore IDISP008
+    private readonly bool _disposeHttpClient;
     private readonly IKubernetesSerializerFactory _serializerFactory;
     private readonly KubernetesClientMetrics _metrics;
 
@@ -55,7 +58,7 @@ public class KubernetesClient
     /// <param name="options">The <see cref="KubernetesClientOptions"/>.</param>
     /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
     public KubernetesClient(KubernetesClientOptions options, IKubernetesSerializerFactory serializerFactory)
-        : this(options, serializerFactory, KubernetesHttpClientFactory.CreateHttpClient)
+        : this(options, serializerFactory, KubernetesHttpClientFactory.CreateHttpClient(options), true)
     {
     }
 
@@ -65,21 +68,24 @@ public class KubernetesClient
     /// </summary>
     /// <param name="options">The <see cref="KubernetesClientOptions"/>.</param>
     /// <param name="serializerFactory">The <see cref="IKubernetesSerializerFactory"/>.</param>
-    /// <param name="httpClientFactory">The HTTP client factory.</param>
+    /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
+    /// <param name="disposeHttpClient">Whether to dispose the <see cref="HttpClient"/>.</param>
     public KubernetesClient(
         KubernetesClientOptions options,
         IKubernetesSerializerFactory serializerFactory,
-        Func<KubernetesClientOptions, HttpClient> httpClientFactory)
+        HttpClient httpClient,
+        bool disposeHttpClient)
     {
         Ensure.Arg.NotNull(options);
         Ensure.Arg.NotNull(serializerFactory);
-        Ensure.Arg.NotNull(httpClientFactory);
+        Ensure.Arg.NotNull(httpClient);
 
         options = options.Seal();
 
         _options = options;
         _serializerFactory = serializerFactory;
-        _httpClient = httpClientFactory(options);
+        _httpClient = httpClient;
+        _disposeHttpClient = disposeHttpClient;
         _metrics = new KubernetesClientMetrics(_httpClient);
     }
 
@@ -166,6 +172,27 @@ public class KubernetesClient
         }
     }
 
+    /// <summary>
+    /// Connects to a WebSocket endpoint of the Kubernetes API server.
+    /// </summary>
+    /// <param name="uri">The URI to connect to.</param>
+    /// <param name="protocol">The sub-protocol to use.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The <see cref="KubernetesWebSocket"/>.</returns>
+    public async Task<KubernetesWebSocket> ConnectAsync(
+        Uri uri,
+        string? protocol,
+        CancellationToken cancellationToken = default)
+    {
+        Ensure.Arg.NotNull(uri);
+
+        var webSocket = new KubernetesWebSocket(_httpClient, protocol, _options);
+        await webSocket.ConnectAsync(uri, cancellationToken)
+                       .ConfigureAwait(false);
+
+        return webSocket;
+    }
+
     [EditorBrowsable(EditorBrowsableState.Never)]
     internal T GetOperations<T>(Func<KubernetesClient, T> factory)
         where T : KubernetesClientOperations
@@ -179,5 +206,27 @@ public class KubernetesClient
 #else
         return (T)_operations.GetOrAdd(type, _ => factory(this));
 #endif
+    }
+
+    /// <summary>
+    /// Invoked when the object is disposed.
+    /// </summary>
+    /// <param name="disposing">Whether to dispose unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (_disposeHttpClient)
+            {
+                _httpClient.Dispose();
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

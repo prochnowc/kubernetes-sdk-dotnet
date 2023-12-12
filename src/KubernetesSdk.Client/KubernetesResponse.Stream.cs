@@ -62,7 +62,7 @@ public partial class KubernetesResponse
             _stream.Close();
         }
 
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
         public override void CopyTo(Stream destination, int bufferSize)
         {
             _stream.CopyTo(destination, bufferSize);
@@ -126,7 +126,7 @@ public partial class KubernetesResponse
             return _stream.Read(buffer, offset, count);
         }
 
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
         public override int Read(Span<byte> buffer)
         {
             return _stream.Read(buffer);
@@ -138,7 +138,7 @@ public partial class KubernetesResponse
             return _stream.ReadAsync(buffer, offset, count, cancellationToken);
         }
 
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             return _stream.ReadAsync(buffer, cancellationToken);
@@ -165,7 +165,7 @@ public partial class KubernetesResponse
             _stream.Write(buffer, offset, count);
         }
 
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
         public override void Write(ReadOnlySpan<byte> buffer)
         {
             _stream.Write(buffer);
@@ -177,7 +177,7 @@ public partial class KubernetesResponse
             return _stream.WriteAsync(buffer, offset, count, cancellationToken);
         }
 
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         {
             return _stream.WriteAsync(buffer, cancellationToken);

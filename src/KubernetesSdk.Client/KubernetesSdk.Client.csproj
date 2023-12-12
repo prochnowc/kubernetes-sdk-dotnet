@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.0" />
+    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
     <PackageReference Include="System.Reactive" Version="6.0.0" />
     <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
@@ -50,6 +51,18 @@
     </Compile>
     <Compile Update="CertificateLoader.Net5.cs">
       <DependentUpon>CertificateLoader.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Http\KubernetesHttpClientFactory.Legacy.cs">
+      <DependentUpon>KubernetesHttpClientFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Http\KubernetesHttpClientFactory.Net5.cs">
+      <DependentUpon>KubernetesHttpClientFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Update="KubernetesWebSocket.Legacy.cs">
+      <DependentUpon>KubernetesWebSocket.cs</DependentUpon>
+    </Compile>
+    <Compile Update="KubernetesWebSocket.Net7.cs">
+      <DependentUpon>KubernetesWebSocket.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

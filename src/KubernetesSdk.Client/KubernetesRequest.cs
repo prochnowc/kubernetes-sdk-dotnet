@@ -24,7 +24,7 @@ public sealed class KubernetesRequest
     public HttpMethod Method { get; }
 
     /// <summary>
-    /// Gets the URI of the API endpoint.
+    /// Gets the relative URI of the API endpoint.
     /// </summary>
     public Uri Uri { get; }
 
@@ -110,19 +110,11 @@ public sealed class KubernetesRequest
             Content = content,
         };
 
-        // TODO: below code can probably go to KubernetesHttpClientFactory
 #if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
         request.Version = options.DisableHttp2
             ? HttpVersion.Version11
             : HttpVersion.Version20;
 #endif
-
-        request.Headers.UserAgent.Add(options.UserAgent ?? KubernetesClientDefaults.UserAgent);
-
-        if (!string.IsNullOrWhiteSpace(options.TlsServerName))
-        {
-            request.Headers.Host = options.TlsServerName;
-        }
 
         return request;
     }

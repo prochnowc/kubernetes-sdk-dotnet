@@ -16,7 +16,7 @@ using NSubstitute;
 
 namespace Kubernetes.Client.LeaderElection;
 
-public class LeaderElectorTests
+public class LeaderElectorTests : IDisposable
 {
     private class TestLock : ILock
     {
@@ -394,5 +394,19 @@ public class LeaderElectorTests
 
         await OnStoppedLeading.Received(1)
                               .Invoke();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Client.Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

@@ -23,7 +23,7 @@ using TracerProvider tracerProvider = Sdk.CreateTracerProviderBuilder()
                                        .AddConsoleExporter()
                                        .Build() !;
 
-var client = new KubernetesClient();
+using var client = new KubernetesClient();
 
 V1NamespaceList namespaces = await client.CoreV1().ListNamespaceAsync();
 foreach (V1Namespace ns in namespaces.Items)

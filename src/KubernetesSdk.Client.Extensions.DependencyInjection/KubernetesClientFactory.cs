@@ -35,6 +35,7 @@ internal sealed class KubernetesClientFactory : IKubernetesClientFactory
         return new KubernetesClient(
             _clientOptionsSnapshot.Get(name),
             _serializerFactory,
-            _ => _httpClientFactory.CreateClient(GetHttpClientName(name)));
+            _httpClientFactory.CreateClient(GetHttpClientName(name)),
+            false);
     }
 }

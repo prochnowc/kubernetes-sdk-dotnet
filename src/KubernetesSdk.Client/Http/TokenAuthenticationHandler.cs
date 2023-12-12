@@ -15,7 +15,7 @@ namespace Kubernetes.Client.Http;
 /// </summary>
 public sealed class TokenAuthenticationHandler : DelegatingHandler
 {
-    private const string AuthenticationScheme = "Bearer";
+    internal const string AuthenticationScheme = "Bearer";
     private readonly ITokenProvider _tokenProvider;
 
     /// <summary>

@@ -134,5 +134,12 @@ public static partial class KubernetesHttpClientFactory
 
         // Timeout is applied by KubernetesRequest to each individual request.
         client.Timeout = Timeout.InfiniteTimeSpan;
+
+        client.DefaultRequestHeaders.UserAgent.Add(options.UserAgent ?? KubernetesClientDefaults.UserAgent);
+
+        if (!string.IsNullOrWhiteSpace(options.TlsServerName))
+        {
+            client.DefaultRequestHeaders.Host = options.TlsServerName;
+        }
     }
 }

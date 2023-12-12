@@ -7,7 +7,7 @@ using Kubernetes.Models;
 
 try
 {
-    var client = new KubernetesClient();
+    using var client = new KubernetesClient();
     VersionInfo code = await client.Version()
                                    .GetCodeAsync();
 
@@ -16,7 +16,7 @@ try
     V1NamespaceList namespaces = await client.CoreV1().ListNamespaceAsync();
     foreach (V1Namespace ns in namespaces.Items)
     {
-        Console.WriteLine(ns.Metadata?.Name);
+        Console.WriteLine(ns.Metadata.Name);
     }
 }
 catch (Exception error)
